@@ -1,0 +1,190 @@
+{
+  "version": 4,
+  "step": "done",
+  "owner": "active-orchestrator",
+  "discovery": {
+    "created_by": "discovery-research",
+    "completed_at": "2026-10-02",
+    "sources_fetched_at": "2026-10-02",
+    "discovery_mode": "qa_only",
+    "sources": [
+      "https://www.dentalsoft.com.ar/",
+      "https://www.dentalsoft.com.ar/demo",
+      "https://agendapro.com/ar",
+      "https://agendapro.com/es/planes",
+      "https://www.argentina.gob.ar/normativa/nacional/ley-25326-64790/actualizacion",
+      "https://whatsappbusiness.com/products/platform-pricing",
+      "https://www.gendu.com.ar/planes",
+      "https://www.mercadopago.com.ar/herramientas-para-vender/check-out",
+      "https://www.bcra.gob.ar/estadisticas-indicadores",
+      "https://www.denpro.ar/"
+    ],
+    "competitors": [
+      {
+        "name": "DentalSoft",
+        "country": "AR",
+        "notes_file": "docs/discovery/_research-argentina.md"
+      },
+      {
+        "name": "DentalFLOW",
+        "country": "AR",
+        "notes_file": "docs/discovery/_research-argentina.md"
+      },
+      {
+        "name": "Dentiqa",
+        "country": "AR",
+        "notes_file": "docs/discovery/_research-argentina.md"
+      },
+      {
+        "name": "Orbita",
+        "country": "AR",
+        "notes_file": "docs/discovery/_research-argentina.md"
+      },
+      {
+        "name": "Denteo",
+        "country": "AR",
+        "notes_file": "docs/discovery/_research-argentina.md"
+      },
+      {
+        "name": "Bilog",
+        "country": "AR",
+        "notes_file": "docs/discovery/_research-argentina.md"
+      },
+      {
+        "name": "AgendaPro",
+        "country": "AR",
+        "notes_file": "docs/discovery/_research-latam.md"
+      },
+      {
+        "name": "SimpleTurno",
+        "country": "AR",
+        "notes_file": "docs/discovery/_research-latam.md"
+      },
+      {
+        "name": "Clinicorp",
+        "country": "BR",
+        "notes_file": "docs/discovery/_research-latam.md"
+      },
+      {
+        "name": "Prontuario Verde",
+        "country": "BR",
+        "notes_file": "docs/discovery/_research-latam.md"
+      },
+      {
+        "name": "Dentalink",
+        "country": "CL",
+        "notes_file": "docs/discovery/_research-latam.md"
+      },
+      {
+        "name": "Open Dental",
+        "country": "US",
+        "notes_file": "docs/discovery/_research-latam.md"
+      },
+      {
+        "name": "NexHealth",
+        "country": "US",
+        "notes_file": "docs/discovery/_research-latam.md"
+      },
+      {
+        "name": "Oryx Dental",
+        "country": "US",
+        "notes_file": "docs/discovery/_research-latam.md"
+      }
+    ],
+    "full_report": "docs/discovery/informe-discovery.md",
+    "verification_report": "docs/discovery/_verificacion-fuentes.md",
+    "problema": "En consultorios odontologicos de Argentina la gestion de turnos es manual o fragmentada (cuadernos o planillas para la agenda interna, WhatsApp informal con pacientes), lo que produce solapamientos entre profesionales y entre sillones, ausentismo por falta de confirmaciones automaticas, y perdida de tiempo administrativo que compite con la atencion clinica. El proyecto se enfoca en el primer dano: hacer de la nocion de conflicto un invariante del sistema en lugar de un chequeo best-effort en la interfaz.",
+    "usuarios": [
+      "Recepcionista / Asistente: gestiona la agenda global, asigna sillones o boxes, cobra senas, maneja sobreturnos y cancelaciones.",
+      "Odontologo: consulta su agenda diaria y semanal, ve las prestaciones asignadas y registra la atencion clinica.",
+      "Paciente: accede a un enlace publico de reserva 24/7, selecciona profesional y horario, recibe confirmaciones y recordatorios, y solicita o cancela turnos."
+    ],
+    "auth_decision": "El paciente NO se autentica. La reserva es guest booking por enlace publico, para evitar RBAC de paciente y mantener simple el modelo de datos inicial.",
+    "casos_de_uso": [
+      "CU01: Como recepcionista, quiero agendar un turno asignando profesional, sillon/box y prestacion, para reservar la atencion sin solapar horarios.",
+      "CU02: Como paciente, quiero consultar la disponibilidad real y reservar un turno online, para coordinar mi atencion sin depender de llamadas telefonicas.",
+      "CU03: Como recepcionista, quiero cancelar o reprogramar un turno, para liberar el horario o reasignarlo adecuadamente.",
+      "CU04: Como odontologo, quiero visualizar mi agenda del dia con las prestaciones asignadas, para organizar mi jornada de atencion."
+    ],
+    "change_scope": "Un solo change, acotado a CU01 + CU02 encadenadas, con la validacion transaccional de RN01 a RN05 como nucleo. CU03 y CU04 quedan documentadas y modeladas, sin implementacion.",
+    "funcionalidades_necesarias": [
+      "Agenda de turnos con deteccion estricta de solapamientos, validada simultaneamente por profesional y por sillon/box.",
+      "Reserva online del paciente sobre disponibilidad real, via enlace publico sin autenticacion, sin posibilidad de doble reserva.",
+      "Cancelacion y reprogramacion de turnos, con liberacion inmediata del slot en la agenda del profesional y del sillon."
+    ],
+    "funcionalidades_opcionales": [
+      "Confirmacion y recordatorio automatico por WhatsApp o email.",
+      "Cobro de senas integrando Mercado Pago y control de ausentismo.",
+      "Ficha clinica basica y odontograma interactivo.",
+      "Reportes de liquidacion por profesional y caja diaria.",
+      "Gestion de obra social y prepagas.",
+      "Sobreturnos como caso de primera clase.",
+      "Multi-sucursal y roles configurables.",
+      "Facturacion electronica ante ARCA."
+    ],
+    "reglas_de_negocio": [
+      "RN01 Duracion por prestacion: cada prestacion define su duracion estimada en minutos (consulta 30, obturacion 45, endodoncia 90) y determina el bloque de tiempo requerido en agenda.",
+      "RN02 Doble validacion de solapamiento: un turno no puede solaparse con otro turno agendado para el mismo profesional ni para el mismo sillon/box dentro de su intervalo. Solapamiento si inicio_nuevo < fin_anterior y fin_nuevo > inicio_anterior. Dos turnos que se tocan en el borde (inicio_nuevo == fin_anterior) NO se solapan. INVARIANTE CENTRAL DEL PROYECTO: debe vivir en la capa de persistencia, no solo en la validacion de aplicacion.",
+      "RN03 Validacion temporal: no se pueden agendar ni reservar turnos en fechas u horas pasadas, ni fuera del horario de atencion configurado.",
+      "RN04 Politica de cancelacion: la cancelacion registra el estado Cancelado y libera de forma inmediata el slot de tiempo en el sillon y en la agenda del profesional.",
+      "RN05 Limite por paciente: un mismo paciente no puede tener mas de un turno activo en el mismo dia."
+    ],
+    "integraciones": [
+      "Servicio de notificaciones MOCKEADO: el dominio depende de una interfaz de servicio de notificaciones cuya implementacion en el proyecto es un mock. No se usa la WhatsApp Business API de Meta (requiere verificacion empresarial, plantillas aprobadas con hasta 24h de revision y costo por mensaje cobrado a Meta).",
+      "Sin integraciones de pago ni facturacion en el MVP: Mercado Pago y ARCA quedan en backlog.",
+      "Sin ficha clinica en el MVP, decision deliberada que reduce el riesgo legal: si el sistema no guarda datos clinicos, la reserva publica sin autenticacion no manipula datos sensibles de salud."
+    ],
+    "restricciones": [
+      "Trabajo individual: un unico integrante.",
+      "Plazo: entrega la semana proxima.",
+      "Presupuesto de infraestructura $0: todo local, sin servicios pagos.",
+      "Sin restriccion de stack: el stack es decision de kb-creator.",
+      "Criterios de evaluacion oficiales (100 pts): Informe Discovery 25%, Verificacion 10%, Fundacion 20%, Change OPSX 25%, Video 10%, Reflexion 5%, Trazabilidad 5%.",
+      "Consecuencia: Discovery + Verificacion = 35% ya cerrados. El Change OPSX (25%) corresponde a un solo change, por lo que debe ser chico y demostrable antes que amplio."
+    ],
+    "riesgos": [
+      "R1 Concurrencia en la reserva (riesgo tecnico central): dos pacientes pueden pedir el mismo slot simultaneamente; una validacion en la capa de aplicacion deja una ventana entre la consulta de disponibilidad y el alta. Mitigacion: llevar RN02 a la base de datos con constraint de exclusion por profesional+rango y otra por sillon+rango, o serializacion con bloqueo.",
+      "R2 El vacio de mercado puede ser un artefacto de publicacion: que ningun proveedor declare la doble validacion no prueba que ninguno la implemente. El hallazgo se sostiene como 'no se comunica', no como 'no existe'.",
+      "R3 Riesgo legal de la reserva sin autenticacion: cualquiera puede ocupar un turno; la exclusion del Art. 5.2 inc. d de la Ley 25.326 es interpretacion, no texto explicito. Mitigacion: el MVP no almacena ficha clinica ni dato sensible y exige confirmacion por canal.",
+      "R4 Alcance y calendario: 4 casos de uso, 5 reglas, 3 roles y el andamiaje completo de OpenSpec/Active Stack, con plazo de una semana y un solo integrante.",
+      "R5 La demo puede parecer ficticia: notificaciones mockeadas frente a un mercado donde todos venden WhatsApp real. Mitigacion: convertir la limitacion en argumento declarando el costo real con cifras verificadas."
+    ],
+    "preguntas_abiertas": [
+      "Qx Modelo de persistencia para RN02: PostgreSQL con constraint de exclusion (EXCLUDE USING gist) o SQLite con serializacion explicita. Depende del stack y determina si el conflict checking es declarativo o procedural.",
+      "Qy Modelo de consentimiento: si el consentimiento expreso del Art. 5.1 de la Ley 25.326 se implementa como entidad persistida en el MVP o queda documentado como requisito de la fase siguiente.",
+      "Qz Nombre definitivo: TurnosAR es provisorio; la catedra no requiere uno propio.",
+      "Qw Profundidad de los tests: si los tests de RN02 cubren tambien el escenario de dos reservas concurrentes reales o solo el solapamiento logico."
+    ],
+    "key_findings": [
+      "Hallazgo de mercado: 0 de 14 proveedores argentinos declaran la doble validacion de solapamiento por profesional y por sillon/box. Solo 4 de 14 documentan control por profesional y solo 1 (Orbita) por recurso fisico.",
+      "Hallazgo de cumplimiento: 10 de 14 proveedores argentinos no publican mecanismos de seguridad y ninguno menciona la Ley 25.326. Benty declara almacenamiento de datos de salud en Estados Unidos, lo que interactua con la prohibicion de transferencia internacional del Art. 12.1.",
+      "Hallazgo economico: el canal de notificaciones es la dependencia economica real del rubro. DentalSoft declara USD 0,026 por recordatorio de WhatsApp, Gendu vende packs desde $3.900/mes hasta $59.900/mes por 1.000, AgendaPro ofrece el add-on desde $7.900/mes.",
+      "La verificacion por fetch directo de 8 URLs detecto 5 errores materiales en el relevamiento inicial, incluidos una URL de precios inexistente, una funcionalidad atribuida sin respaldo y un competidor mal clasificado como argentino."
+    ]
+  },
+  "kb": {
+    "created_by": "kb-creator",
+    "source": "interactive",
+    "discovery": {
+      "problem": "La gestion de turnos en consultorios odontologicos argentinos es manual y fragmentada, lo que produce solapamientos entre profesionales y sillones.",
+      "system_type": "api",
+      "domain": "odontologia",
+      "scale": "team",
+      "stack": "FastAPI + Pydantic v2 + SQLAlchemy 2.0 + Alembic + PostgreSQL 16 (Docker local), pytest + httpx",
+      "needs_infra": true
+    },
+    "files": [
+      "knowledge-base/01_vision_y_objetivos.md",
+      "knowledge-base/02_descripcion_general.md",
+      "knowledge-base/03_actores_y_roles.md",
+      "knowledge-base/04_modelo_de_datos.md",
+      "knowledge-base/05_reglas_de_negocio.md",
+      "knowledge-base/06_funcionalidades.md",
+      "knowledge-base/07_flujos_principales.md",
+      "knowledge-base/08_arquitectura_propuesta.md",
+      "knowledge-base/09_decisiones_y_supuestos.md",
+      "knowledge-base/10_preguntas_abiertas.md",
+      "knowledge-base/README.md"
+    ]
+  }
+}
