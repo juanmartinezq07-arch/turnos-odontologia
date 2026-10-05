@@ -60,7 +60,7 @@ Paso │ Agente A (Backend Core) │ Agente B (Backend Aux) │ Agente C (Fronte
 > Sin forks ni gates intermedios: todo el MVP vive en un solo change demostrable.
 
 ### [C-01] `turnos-mvp`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-10-03-turnos-mvp/`)
 - **Scope**: MVP API puro FastAPI + PostgreSQL 16 con invariante RN02 en persistencia (CU01 + CU02, CU03/CU04 mínimo operable)
   - `docker-compose.yml`: servicio `db` Postgres 16 con extensión `btree_gist` habilitada
   - `alembic/versions/`: Migración 001 tablas (`profesional`, `sillon`, `prestacion`, `paciente_guest`, `turno`, `horario_atencion`); Migración 002 doble `EXCLUDE USING gist` (`profesional_id WITH =`, `sillon_id WITH =`, `tstzrange(inicio, fin) WITH &&`) `WHERE (estado = 'activo')` + `CHECK (fin > inicio)`
