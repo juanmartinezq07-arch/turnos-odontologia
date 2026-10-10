@@ -1,10 +1,10 @@
-# Spec Delta
+﻿# Spec Delta
 
 ## Purpose
 
-Permite a la recepcionista crear, cancelar y reprogramar turnos sin solapamientos, con el cálculo de fin en el servidor y la liberación inmediata de slots al cancelar.
+Permite a la recepcionista crear turnos sin solapamientos por profesional ni por sillón, con el cálculo de fin en el servidor.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Alta de turno calcula fin en el servidor (RN01)
 
@@ -39,6 +39,11 @@ El sistema SHALL rechazar con 409 y código `RN02_PROFESIONAL` o `RN02_SILLON` t
 - **WHEN** existe un turno activo de 10:00 a 10:30 y se pide otro de 10:30 a 11:00 con mismo profesional y sillón
 - **THEN** el sistema responde 201
 
+#### Scenario: Concurrencia real al mismo slot
+
+- **WHEN** dos `POST /turnos` concurrentes piden el mismo slot activo del mismo profesional y sillón
+- **THEN** uno responde 201 y el otro responde 409 (con `RN02_PROFESIONAL` o `RN02_SILLON`)
+
 ### Requirement: Alta valida temporalidad y horario (RN03)
 
 El sistema SHALL rechazar con 422 todo turno con `inicio` en el pasado (contra `now()` en `America/Argentina/Buenos_Aires`) o fuera de `HorarioAtencion`.
@@ -52,35 +57,3 @@ El sistema SHALL rechazar con 422 todo turno con `inicio` en el pasado (contra `
 
 - **WHEN** se pide un turno fuera del horario configurado (ej. domingo sin atención)
 - **THEN** el sistema responde 422
-
-### Requirement: Alta aplica límite de un activo por día (RN05)
-
-El sistema SHALL rechazar con 409 y código `RN05` todo turno activo cuando el mismo paciente (teléfono o email normalizado) ya tiene otro turno activo ese día calendario.
-
-#### Scenario: Segundo activo el mismo día
-
-- **WHEN** el paciente con teléfono `11-0000-0001` ya tiene un turno activo hoy y pide otro activo hoy
-- **THEN** el sistema responde 409 con `code = RN05`
-
-### Requirement: Cancelación libera el slot (RN04)
-
-El sistema SHALL implementar la cancelación como `UPDATE estado='cancelado', cancelled_at=now()` (sin borrado físico) y SHALL volver a ofrecer ese rango en disponibilidad.
-
-#### Scenario: Cancelar libera
-
-- **WHEN** la recepcionista cancela un turno activo
-- **THEN** el sistema responde 200, el turno queda `cancelado` con `cancelled_at` informado y un nuevo turno en ese mismo rango responde 201
-
-#### Scenario: Cancelar lo ya cancelado es idempotente
-
-- **WHEN** se pide cancelar un turno ya `cancelado`
-- **THEN** el sistema responde 409 o 422 sin duplicar efectos
-
-### Requirement: Reprogramación atómica con rollback
-
-El sistema SHALL ejecutar la reprogramación en una sola transacción: si el destino viola RN02/RN03/RN05, SHALL hacer rollback total y el turno original SHALL permanecer activo.
-
-#### Scenario: Destino choca, original intacto
-
-- **WHEN** se reprograma un turno activo a un slot ocupado por otro activo
-- **THEN** el sistema responde 409 y el turno original sigue `activo` en su horario inicial
