@@ -26,65 +26,67 @@ Ordenada por relevancia para el mercado argentino. El criterio de orden combina 
 
 ### A.1 — Competidores argentinos
 
-| # | Producto | Empresa | Segmento | Despliegue | Anti-solap. profesional | Anti-solap. sillón | Reserva pública sin login | Notificaciones | Odontograma | Precio publicado |
-|---|----------|---------|----------|-----------|-----------------------|--------------------|------------------------|---------------|-------------|-----------------|
-| 1 | **DentalSoft** | DentalSoft (La Plata / Rosario) | Clínicas multi-profesional | Nube | **Sí** | No evidenciado | **Sí** — web propia, 4 pasos | WhatsApp + email (solo Pro) | **Sí** — 18 estados, notación FDI | **Sí** — $0 / $30.000 / $60.000 |
-| 2 | **DentalFLOW** | TrapelTech (Río Negro) | Consultorio / clínica | Nube | **Sí** — garantía a nivel BD | No evidenciado | **Sí** — solo DNI, sin cuentas | Parcial — hoy email | No evidenciado | No — a consultar |
-| 3 | **Dentiqa** | Violet Wave | Consultorio / clínica | Nube | **Sí** — bloqueo por profesional | No evidenciado | **Sí** — chatbot IA por WhatsApp | **Sí** — WhatsApp Business API oficial | No evidenciado | **Sí** — USD 89 / 149 / 249 |
-| 4 | **Órbita** | Órbita Global (La Plata) | Consultorio / clínica | Nube | Parcial — agenda por profesional | **Sí** — «choque imposible» | **Sí** — alta por QR | **Sí** — Órbita Chat con IA | No evidenciado | **Sí** — USD 25 / 113 |
-| 5 | **Denteo** | Datasoluciones (Santa Fe) | Consultorio | Nube | No evidenciado | No evidenciado | No evidenciado | **Sí** — 7 plantillas WA Business | No evidenciado | **Sí** — AR$ 30.000 / 45.000 |
-| 6 | **Bilog** | Bilog (20+ años en AR) | Cadena / consultorio | Nube | No evidenciado — admite sobreturno | No evidenciado | **Sí** — pack por QR | **Sí** — WhatsApp y SMS | No evidenciado | No — cotiza por usuario |
-| 7 | **DentalTec** | Tándem Digital | Clínica | Nube | No evidenciado | No evidenciado | No evidenciado | **Sí** — WhatsApp, 98 % entrega | No evidenciado | No — packs desde USD 9 |
-| 8 | **Benty** | BENTY SRL (CABA) | Cadena | Nube | No evidenciado | No evidenciado | Parcial — portal del paciente | **Sí** — WhatsApp | No evidenciado | No — a consultar |
-| 9 | **DentalSaaS** | DelRioTech SAS (Sgo. del Estero) | Clínica | Nube | **Sí** | No evidenciado | Parcial — portal de paciente | **Sí** — WhatsApp | No evidenciado | **Sí** — $59.000 / $149.000 / $349.000 |
-| 10 | **DentiClick** | ThunderSkills (AR + VE) | Consultorio | Nube | No evidenciado | No evidenciado | **Sí** — subdominio propio | No evidenciado | No evidenciado | **Sí** — USD 0 / 12 / 22 / 35 |
-| 11 | **OdontLux** | Creative Software | Consultorio | Nube | No evidenciado | No evidenciado | **Sí** — turnero 24/7 | **Sí** — canal no especificado | No evidenciado | No — módulos a cotizar |
-| 12 | **Sigo** | Hosting Bahía (Buenos Aires) | Consultorio | Nube | No evidenciado | No evidenciado | No evidenciado | **Sí** — recordatorios por email | No evidenciado | **Sí** — $25.000 (1 profesional) |
-| 13 | **OdontoApp** | Sovil | Consultorio | Nube | No evidenciado | No evidenciado | No evidenciado | Declaradas, canal no especificado | No evidenciado | No evidenciado |
-| 14 | **ClinIA / OdontoClinIA** | Emprinet | Consultorio | Nube | No evidenciado | No evidenciado | **Sí** — agenda 24/7 + asistente IA | **Sí** — WhatsApp | No evidenciado | No — demo sin costo |
+| # | Producto | Empresa | Segmento | Despliegue | Anti-solap. profesional | Anti-solap. sillón | Reserva pública sin login | Notificaciones | Odontograma | Precio publicado | Fuente (consulta 2026-10-02) |
+|---|----------|---------|----------|-----------|-----------------------|--------------------|------------------------|---------------|-------------|-----------------| --- |
+| 1 | **DentalSoft** | DentalSoft (La Plata / Rosario) | Clínicas multi-profesional | Nube | **Sí** | No evidenciado | **Sí** — web propia, 4 pasos | WhatsApp + email (solo Pro) | **Sí** — 18 estados, notación FDI | **Sí** — $0 / $30.000 / $60.000 | dentalsoft.com.ar · 2026-10-02 |
+| 2 | **DentalFLOW** | TrapelTech (Río Negro) | Consultorio / clínica | Nube | **Sí** — garantía a nivel BD | No evidenciado | **Sí** — solo DNI, sin cuentas | Parcial — hoy email | No evidenciado | No — a consultar | dentalflow.ar · 2026-10-02 |
+| 3 | **Dentiqa** | Violet Wave | Consultorio / clínica | Nube | **Sí** — bloqueo por profesional | No evidenciado | **Sí** — chatbot IA por WhatsApp | **Sí** — WhatsApp Business API oficial | No evidenciado | **Sí** — USD 89 / 149 / 249 | dentiqa.app/ar · 2026-10-02 |
+| 4 | **Órbita** | Órbita Global (La Plata) | Consultorio / clínica | Nube | Parcial — agenda por profesional | **Sí** — «choque imposible» | **Sí** — alta por QR | **Sí** — Órbita Chat con IA | No evidenciado | **Sí** — USD 25 / 113 | hiorbita.com · 2026-10-02 |
+| 5 | **Denteo** | Datasoluciones (Santa Fe) | Consultorio | Nube | No evidenciado | No evidenciado | No evidenciado | **Sí** — 7 plantillas WA Business | No evidenciado | **Sí** — AR$ 30.000 / 45.000 | denteo.com.ar · 2026-10-02 |
+| 6 | **Bilog** | Bilog (20+ años en AR) | Cadena / consultorio | Nube | No evidenciado — admite sobreturno | No evidenciado | **Sí** — pack por QR | **Sí** — WhatsApp y SMS | No evidenciado | No — cotiza por usuario | bilog.com.ar · 2026-10-02 |
+| 7 | **DentalTec** | Tándem Digital | Clínica | Nube | No evidenciado | No evidenciado | No evidenciado | **Sí** — WhatsApp, 98 % entrega | No evidenciado | No — packs desde USD 9 | web.dentaltec.com.ar · 2026-10-02 |
+| 8 | **Benty** | BENTY SRL (CABA) | Cadena | Nube | No evidenciado | No evidenciado | Parcial — portal del paciente | **Sí** — WhatsApp | No evidenciado | No — a consultar | benty.com.ar · 2026-10-02 |
+| 9 | **DentalSaaS** | DelRioTech SAS (Sgo. del Estero) | Clínica | Nube | **Sí** | No evidenciado | Parcial — portal de paciente | **Sí** — WhatsApp | No evidenciado | **Sí** — $59.000 / $149.000 / $349.000 | dental.delriotech.com.ar · 2026-10-02 |
+| 10 | **DentiClick** | ThunderSkills (AR + VE) | Consultorio | Nube | No evidenciado | No evidenciado | **Sí** — subdominio propio | No evidenciado | No evidenciado | **Sí** — USD 0 / 12 / 22 / 35 | denticlick.app · 2026-10-02 |
+| 11 | **OdontLux** | Creative Software | Consultorio | Nube | No evidenciado | No evidenciado | **Sí** — turnero 24/7 | **Sí** — canal no especificado | No evidenciado | No — módulos a cotizar | odontlux.com · 2026-10-02 |
+| 12 | **Sigo** | Hosting Bahía (Buenos Aires) | Consultorio | Nube | No evidenciado | No evidenciado | No evidenciado | **Sí** — recordatorios por email | No evidenciado | **Sí** — $25.000 (1 profesional) | sigo.com.ar · 2026-10-02 |
+| 13 | **OdontoApp** | Sovil | Consultorio | Nube | No evidenciado | No evidenciado | No evidenciado | Declaradas, canal no especificado | No evidenciado | No evidenciado | odontoapp.com.ar · 2026-10-02 |
+| 14 | **ClinIA / OdontoClinIA** | Emprinet | Consultorio | Nube | No evidenciado | No evidenciado | **Sí** — agenda 24/7 + asistente IA | **Sí** — WhatsApp | No evidenciado | No — demo sin costo | emprinet.com · 2026-10-02 |
 
 ### A.2 — Latinoamérica
 
-| # | Producto | Empresa | País | Presencia AR | Anti-solap. profesional | Anti-solap. sillón | Reserva sin login | WhatsApp | Precio publicado |
-|---|----------|---------|------|---------------|-----------------------|--------------------|-------------------|-----------|-----------------|
-| 15 | **AgendaPro** | AgendaPro Inc. | Argentina | **Sí** — sede y teléfono local | No evidenciado | No evidenciado | No evidenciado | **Sí** — add-on desde $7.900/mes | **Sí** — USD 9 / 29 / 59 |
-| 16 | **SimpleTurno** | — | Argentina / Río de la Plata | **Sí** | No evidenciado | No evidenciado | No evidenciado | **Sí** | **Sí** — plan gratuito |
-| 17 | **Reservo** | — | Argentina | **Sí** | No evidenciado | No evidenciado | Parcial | **Sí** | No evidenciado |
-| 18 | **Clinicorp** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | **Sí** | **Sí** | **Sí** (BRL) |
-| 19 | **Prontuário Verde** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | **Sí** | **Sí** | No evidenciado |
-| 20 | **Simples Dental** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | **Sí** | **Sí** | No evidenciado |
-| 21 | **Dentalis** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | No evidenciado | **Sí** | No evidenciado |
-| 22 | **Sistema ClínicaPro** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | No evidenciado | **Sí** | No evidenciado |
-| 23 | **Dentalink** | — | Chile | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No — cotización |
-| 24 | **Doctoralia PRO** | Docplanner | España | **Sí** | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No evidenciado |
-| 25 | **UDENTIVA** | — | Uruguay | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No evidenciado |
-| 26 | **DentalCitas** | — | México | No evidenciado | **Sí** (declarado) | **Sí** (declarado) | **Sí** (declarado) | No evidenciado | **Sí** (MXN) |
+| # | Producto | Empresa | País | Presencia AR | Anti-solap. profesional | Anti-solap. sillón | Reserva sin login | WhatsApp | Precio publicado | Fuente (consulta 2026-10-02) |
+|---|----------|---------|------|---------------|-----------------------|--------------------|-------------------|-----------|-----------------| --- |
+| 15 | **AgendaPro** | AgendaPro Inc. | Argentina | **Sí** — sede y teléfono local | No evidenciado | No evidenciado | No evidenciado | **Sí** — add-on desde $7.900/mes | **Sí** — USD 9 / 29 / 59 | agendapro.com/ar · 2026-10-02 |
+| 16 | **SimpleTurno** | — | Argentina / Río de la Plata | **Sí** | No evidenciado | No evidenciado | No evidenciado | **Sí** | **Sí** — plan gratuito | simpleturno.com · 2026-10-02 |
+| 17 | **Reservo** | — | Argentina | **Sí** | No evidenciado | No evidenciado | Parcial | **Sí** | No evidenciado | reservo.com.ar · 2026-10-02 |
+| 18 | **Clinicorp** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | **Sí** | **Sí** | **Sí** (BRL) | clinicorp.com · 2026-10-02 |
+| 19 | **Prontuário Verde** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | **Sí** | **Sí** | No evidenciado | prontuarioverde.com.br · 2026-10-02 |
+| 20 | **Simples Dental** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | **Sí** | **Sí** | No evidenciado | simplesdental.com · 2026-10-02 |
+| 21 | **Dentalis** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | No evidenciado | **Sí** | No evidenciado | dentalis.com.br · 2026-10-02 |
+| 22 | **Sistema ClínicaPro** | — | Brasil | No evidenciado | No evidenciado | No evidenciado | No evidenciado | **Sí** | No evidenciado | sistemaclinicopro.com.br · 2026-10-02 |
+| 23 | **Dentalink** | — | Chile | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No — cotización | dentalink.net · 2026-10-02 |
+| 24 | **Doctoralia PRO** | Docplanner | España | **Sí** | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No evidenciado | pro.doctoralia.com/ar · 2026-10-02 |
+| 25 | **UDENTIVA** | — | Uruguay | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No evidenciado | No evidenciado | udentiva.com/pt-uy · 2026-10-02 |
+| 26 | **DentalCitas** | — | México | No evidenciado | **Sí** (declarado) | **Sí** (declarado) | **Sí** (declarado) | No evidenciado | **Sí** (MXN) | dental.rasalopa.dev · 2026-10-02 |
 
 ### A.3 — Internacionales de referencia
 
-| # | Producto | Empresa | País | Presencia regional | Vertical odontológica | Anti-solap. | Precio publicado |
-|---|----------|---------|------|-------------------|----------------------|-------------|-----------------|
-| 27 | **Open Dental** | Open Dental Software | EE. UU. | **Sí** — soporte en español en Perú y Uruguay; usuarios en Brasil | **Sí** — completo | No evidenciado públicamente | **Sí** (USD, variable) |
-| 28 | **Oryx Dental** | Oryx Dental | EE. UU. | No evidenciado | **Sí** | No evidenciado | **Sí** — USD 0 a 400 |
-| 29 | **NexHealth** | NexHealth | EE. UU. | No evidenciado | No — capa de experiencia sobre PMS | No evidenciado | No evidenciado |
-| 30 | **CareStack** | CareStack | EE. UU. | No evidenciado | **Sí** | No evidenciado | **Sí** (tercero, USD) |
-| 31 | **Curve Dental** | Curve Dental | EE. UU. | No evidenciado | **Sí** | No evidenciado | No evidenciado |
-| 32 | **Weave** | Weave | EE. UU. | No evidenciado | **Sí** | No evidenciado | **Sí** (USD) |
-| 33 | **Dentally** | Henry Schein One | R. Unido | No evidenciado | **Sí** | No evidenciado | No evidenciado |
-| 34 | **Dentrix** | Henry Schein One | EE. UU. | No evidenciado | **Sí** | No evidenciado | No evidenciado |
+| # | Producto | Empresa | País | Presencia regional | Vertical odontológica | Anti-solap. | Precio publicado | Fuente (consulta 2026-10-02) |
+|---|----------|---------|------|-------------------|----------------------|-------------|-----------------| --- |
+| 27 | **Open Dental** | Open Dental Software | EE. UU. | **Sí** — soporte en español en Perú y Uruguay; usuarios en Brasil | **Sí** — completo | No evidenciado públicamente | **Sí** (USD, variable) | opendental.com · 2026-10-02 |
+| 28 | **Oryx Dental** | Oryx Dental | EE. UU. | No evidenciado | **Sí** | No evidenciado | **Sí** — USD 0 a 400 | oryxdental.com · 2026-10-02 |
+| 29 | **NexHealth** | NexHealth | EE. UU. | No evidenciado | No — capa de experiencia sobre PMS | No evidenciado | No evidenciado | nexhealth.com · 2026-10-02 |
+| 30 | **CareStack** | CareStack | EE. UU. | No evidenciado | **Sí** | No evidenciado | **Sí** (tercero, USD) | curvedental.com + capterra.com (tercero) · 2026-10-02 |
+| 31 | **Curve Dental** | Curve Dental | EE. UU. | No evidenciado | **Sí** | No evidenciado | No evidenciado | curvedental.com · 2026-10-02 |
+| 32 | **Weave** | Weave | EE. UU. | No evidenciado | **Sí** | No evidenciado | **Sí** (USD) | getweave.com · 2026-10-02 |
+| 33 | **Dentally** | Henry Schein One | R. Unido | No evidenciado | **Sí** | No evidenciado | No evidenciado | dentally.com · 2026-10-02 |
+| 34 | **Dentrix** | Henry Schein One | EE. UU. | No evidenciado | **Sí** | No evidenciado | No evidenciado | capterra.com (tercero) · 2026-10-02 |
 
 ### A.4 — Referencias de canal y precio (no odontológicos puros)
 
-| Producto | Perfil | Rol en el análisis |
-|----------|--------|--------------------|
-| **Gendu** | Turnería y recordatorios (AR) | Modelo de negocio del canal de notificaciones |
-| **DenPro** | Software odontológico con dominio AR, empresa de la UE | Referencia de seguridad y cumplimiento |
+| Producto | Perfil | Rol en el análisis | Fuente (consulta 2026-10-02) |
+|----------|--------|--------------------| --- |
+| **Gendu** | Turnería y recordatorios (AR) | Modelo de negocio del canal de notificaciones | gendu.com.ar/planes · 2026-10-02 |
+| **DenPro** | Software odontológico con dominio AR, empresa de la UE | Referencia de seguridad y cumplimiento | denpro.ar · 2026-10-02 |
 
 ---
 
 ## B. Matriz de puntuación
 
 Escala de 0 a 5. Los pesos son los fijados por la consigna.
+
+**Nota metodológica.** Cada criterio se puntúa de 0 (ausencia total o sin evidencia pública) a 5 (capacidad completa y comprobada en fuente pública). Cuando una característica figura como **«No evidenciado»**, se puntúa con el valor más bajo aplicable al criterio **sin asumir que la función no existe**: la falta de evidencia pública no demuestra ausencia, solo que el proveedor no la comunica. Por eso dos productos con igual funcionalidad real pueden puntuar distinto si uno la documenta y el otro no.
 
 | Criterio | Peso |
 |----------|------|
@@ -128,7 +130,7 @@ Escala de 0 a 5. Los pesos son los fijados por la consigna.
 
 ### C.1 — Funcionalidades que ya son estándar de mercado
 
-Las siguientes capacidades aparecem en la mayoría del mercado y **no constituyen diferenciación**:
+Las siguientes capacidades aparecen en la mayoría del mercado y **no constituyen diferenciación**:
 
 - **Reserva online 24/7.** Presente en 6 de 14 sistemas argentinos verificados. Es expectativa de mercado, no ventaja.
 - **Recordatorio automático por WhatsApp y/o email.** Prácticamente universal, aunque su profundidad varía: DentalSoft lo automático solo en el plan Pro y manual en el plan Gestión; Gendu lo incluye como *add-on* con costo aparte.
@@ -177,7 +179,7 @@ Sobre Bilog conviene una lectura de diseño, no de mercado: tratar el solapamien
 |--------|----------|-------------------|
 | 1 | **DentalSoft** | El competidor más completo del mercado argentino y el único que publica precios, control de solapamiento y reserva sin login simultáneamente. Hay una demo pública en `dentalsoft.com.ar/demo` y un flujo de reserva de 4 pasos observable. Referencia directa para el alcance del proyecto. |
 | 2 | **AgendaPro** | Mayor escala y el precio más bajo de la categoría (USD 9/mes). Su flujo de onboarding y su integración con Google Reserve muestran el estándar de experiencia del paciente que el mercado considera aceptable. |
-| 3 | **Dentiqa** | El único con **WhatsApp Business API oficial** declarado. Es la referencia para entender qué implica una integración real con Meta, y quéoty argumento de venta construye alrededor de la IA conversacional. |
+| 3 | **Dentiqa** | El único con **WhatsApp Business API oficial** declarado. Es la referencia para entender qué implica una integración real con Meta, y qué argumento de venta construye alrededor de la IA conversacional. |
 | 4 | **Órbita** | El único que declara **control de conflicto por sillón** («choque imposible»). Es el competidor más cercano al eje central del proyecto y el mejor para contrastar el alcance exacto de un control por recurso físico. |
 | 5 | **DenPro** | Dominio argentino con empresa de la UE. Publica cifrado AES-256 e ISO 27001, y un precio bajo. Sirve como contraste de posicionamiento entre seguridad declarada y cumplimiento normativo local. |
 
@@ -191,9 +193,11 @@ Sobre Bilog conviene una lectura de diseño, no de mercado: tratar el solapamien
 
 ### D.3 — MVP sugerido
 
-#### Imprescindibles — constituyen el change a implementar
+#### Imprescindibles — el producto y el recorte del change
 
-Estos son los tres casos de uso del MVP y las cinco reglas de negocio que los sostienen:
+Del MVP del producto, el **change C-01 implementa una sola funcionalidad** (el ejemplo de la consigna): **crear un turno evitando solapamientos por profesional y por sillón/box (CU01 + RN02)**. El cálculo de duración por prestación (RN01) y la validación temporal contra el horario de atención (RN03) se incluyen solo en la medida necesaria para que ese flujo funcione. El resto —reserva pública del paciente (CU02 como canal), cancelación y reprogramación (CU03), agenda del odontólogo (CU04) y consentimiento expreso registrado— queda como trabajo futuro, fuera de este change.
+
+La tabla siguiente describe las cinco reglas de negocio del producto y qué sostiene cada una:
 
 | Regla | Descripción | Por qué es imprescindible |
 |-------|-------------|---------------------------|
@@ -203,14 +207,15 @@ Estos son los tres casos de uso del MVP y las cinco reglas de negocio que los so
 | **RN04** | Política de cancelación: la cancelación registra estado `Cancelado` y libera de inmediato el slot en sillón y agenda del profesional | Cierra el ciclo de vida del turno; sin ella el sistema no puede volver a ofrecer ese horario |
 | **RN05** | Límite por paciente: un paciente no puede tener más de un turno activo en el mismo día | Regla de negocio real del consultorio, con caso borde claro |
 
-Casos de uso asociados: **CU01** (recepcionista agenda asignando profesional, sillón y prestación), **CU02** (paciente consulta disponibilidad y reserva en línea), **CU03** (recepcionista cancela o reprograma), **CU04** (odontólogo ve su agenda del día con las prestaciones asignadas).
+Caso de uso del change: **CU01** (recepcionista agenda asignando profesional, sillón y prestación). Fuera del change —trabajo futuro—: **CU02** (paciente consulta disponibilidad y reserva en línea), **CU03** (recepcionista cancela o reprograma) y **CU04** (odontólogo ve su agenda del día con las prestaciones asignadas).
 
 #### Diferenciadores — el valor que el mercado no cubre
 
-1. **La invariante doble, declarada y testeada.** RN02 llev Consistency a la capa de persistencia (constraint o transacción), no solo a la validación de la capa de aplicación, y acompañada de tests que cubren: solapamiento parcial por profesional, solapamiento parcial por sillón, solapamiento en las dos dimensiones simultáneamente, y el caso límite de contacto exacto de borde (`inicio_nuevo == fin_anterior`), que debe permitirse.
-2. **Interfaz de notificaciones detrás de una costura arquitectónica.** Implementación mockeada, con el costo real documentado en el informe. Convierte la limitación en una decisión de diseño explícita y trazable.
-3. **Consentimiento expreso registrado en la reserva.** Requisito del Art. 5.1 de la Ley 25.326, y ningún proveedor argentino lo declara.
-4. **Reserva pública sin autenticación, con verificación por canal.** Patrón guest booking que evita el RBAC del paciente sin abrir el dominio a reservas libres sin control.
+1. **La invariante doble, declarada y testeada.** llevar RN02 a la capa de persistencia (constraint o transacción), no solo a la validación de la capa de aplicación, y acompañada de tests que cubren: solapamiento parcial por profesional, solapamiento parcial por sillón, solapamiento en las dos dimensiones simultáneamente, y el caso límite de contacto exacto de borde (`inicio_nuevo == fin_anterior`), que debe permitirse. **Es lo que implementa el change C-01.**
+2. **Interfaz de notificaciones detrás de una costura arquitectónica.** Implementación mockeada, con el costo real documentado en el informe. Convierte la limitación en una decisión de diseño explícita y trazable. (Propuesta de producto; fuera del change C-01.)
+3. **Reserva pública sin autenticación, con verificación por canal.** Patrón guest booking que evita el RBAC del paciente sin abrir el dominio a reservas libres sin control. (Propuesta de producto; fuera del change C-01.)
+
+> **Consentimiento expreso (oportunidad futura, fuera del MVP implementado).** El Art. 5.1 de la Ley 25.326 exige consentimiento libre, expreso e informado que conste por escrito, y ningún proveedor argentino lo declara. Convertirlo en un artefacto del sistema es una diferencia de cumplimiento defendible, pero queda como propuesta para etapas posteriores, no como parte de este change.
 
 #### Para etapas posteriores — backlog
 
@@ -264,3 +269,17 @@ La lección metodológica que corresponde a este trabajo de Integración es dire
 | `docs/discovery/_verificacion-fuentes.md` | Verificación por fetch de 8 URLs, con cita textual literal |
 
 **Convención aplicada en todos los documentos:** «No evidenciado» significa que no se encontró prueba pública. **No implica que la funcionalidad no exista.**
+
+## Referencias completas
+
+Fuentes oficiales consultadas el **2026-10-02** (salvo indicación). Las referencias cortas de la columna «Fuente» de la sección A apuntan a esta lista.
+
+**Argentina:** https://www.dentalsoft.com.ar/ · https://dentalflow.ar/ · https://dentiqa.app/ar · https://hiorbita.com/ · https://www.denteo.com.ar/ · https://bilog.com.ar/ · https://web.dentaltec.com.ar/ · https://benty.com.ar/ · https://dental.delriotech.com.ar/ · https://www.denticlick.app/ · https://odontlux.com/ · https://sigo.com.ar/ · https://odontoapp.com.ar/ · https://emprinet.com/ · https://www.gendu.com.ar/planes · https://denpro.ar/
+
+**Latinoamérica y canales:** https://agendapro.com/ar · https://agendapro.com/ar/planes · https://simpleturno.com/ · https://reservo.com.ar/ · https://www.clinicorp.com/ · https://www.prontuarioverde.com.br/ · https://www.simplesdental.com/ · https://www.dentalis.com.br/ · https://sistemaclinicopro.com.br/ · http://www.dentalink.net/ · https://pro.doctoralia.com/ar · https://udentiva.com/pt-uy · https://dental.rasalopa.dev/
+
+**Internacionales:** https://www.opendental.com/ · https://www.oryxdental.com/ · https://www.nexhealth.com/ · https://www.curvedental.com/ · https://www.getweave.com/ · https://www.dentally.com/ · https://www.capterra.com/ (comparador, fuente de terceros para CareStack y Dentrix)
+
+**Normativa y precios de canal:** https://www.argentina.gob.ar/normativa/nacional/ley-25326-64790/actualizacion (Ley 25.326, texto actualizado) · https://whatsappbusiness.com/products/platform-pricing (modelo de cobro, sin tarifas numéricas) · https://www.mercadopago.com.ar/herramientas-para-vender/check-out
+
+El detalle de respaldo por sistema vive en `docs/discovery/_research-argentina.md`, `_research-latam.md` y `_research-compliance-integrations.md`; la comprobación de las 8 URLs críticas, en `_verificacion-fuentes.md`.

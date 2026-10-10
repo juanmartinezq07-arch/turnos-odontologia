@@ -101,16 +101,20 @@
     ],
     "auth_decision": "El paciente NO se autentica. La reserva es guest booking por enlace publico, para evitar RBAC de paciente y mantener simple el modelo de datos inicial.",
     "casos_de_uso": [
-      "CU01: Como recepcionista, quiero agendar un turno asignando profesional, sillon/box y prestacion, para reservar la atencion sin solapar horarios.",
-      "CU02: Como paciente, quiero consultar la disponibilidad real y reservar un turno online, para coordinar mi atencion sin depender de llamadas telefonicas.",
-      "CU03: Como recepcionista, quiero cancelar o reprogramar un turno, para liberar el horario o reasignarlo adecuadamente.",
-      "CU04: Como odontologo, quiero visualizar mi agenda del dia con las prestaciones asignadas, para organizar mi jornada de atencion."
+      "CU01 [CHANGE C-01]: Como recepcionista, quiero agendar un turno asignando profesional, sillon/box y prestacion, para reservar la atencion sin solapar horarios.",
+      "CU02 [FUTURO, fuera del change]: Como paciente, quiero consultar la disponibilidad real y reservar un turno online, para coordinar mi atencion sin depender de llamadas telefonicas.",
+      "CU03 [FUTURO, fuera del change]: Como recepcionista, quiero cancelar o reprogramar un turno, para liberar el horario o reasignarlo adecuadamente.",
+      "CU04 [FUTURO, fuera del change]: Como odontologo, quiero visualizar mi agenda del dia con las prestaciones asignadas, para organizar mi jornada de atencion."
     ],
-    "change_scope": "Un solo change, acotado a CU01 + CU02 encadenadas, con la validacion transaccional de RN01 a RN05 como nucleo. CU03 y CU04 quedan documentadas y modeladas, sin implementacion.",
+    "change_scope": "Un solo change acotado a CU01: alta de un turno con prevencion de solapamientos por profesional y por sillon/box (RN02 como nucleo). RN01 (duracion) y RN03 (temporal/horario) solo en la medida necesaria para que ese flujo funcione. CU02 (reserva guest), CU03 (cancelacion/reprogramacion) y CU04 (agenda) quedan documentadas como trabajo futuro, fuera del change.",
     "funcionalidades_necesarias": [
-      "Agenda de turnos con deteccion estricta de solapamientos, validada simultaneamente por profesional y por sillon/box.",
-      "Reserva online del paciente sobre disponibilidad real, via enlace publico sin autenticacion, sin posibilidad de doble reserva.",
-      "Cancelacion y reprogramacion de turnos, con liberacion inmediata del slot en la agenda del profesional y del sillon."
+      "Alta de turnos con deteccion estricta de solapamientos, validada simultaneamente por profesional y por sillon/box (CU01 + RN02).",
+      "Calculo de duracion por prestacion y validacion temporal/horario solo como soporte necesario de ese flujo (RN01/RN03)."
+    ],
+    "funcionalidades_futuras_fuera_del_change": [
+      "Reserva online del paciente sobre disponibilidad real, via enlace publico sin autenticacion, sin posibilidad de doble reserva (CU02).",
+      "Cancelacion y reprogramacion de turnos, con liberacion inmediata del slot en la agenda del profesional y del sillon (CU03).",
+      "Agenda del dia del odontologo con prestaciones asignadas (CU04)."
     ],
     "funcionalidades_opcionales": [
       "Confirmacion y recordatorio automatico por WhatsApp o email.",

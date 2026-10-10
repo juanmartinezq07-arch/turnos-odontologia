@@ -5,9 +5,11 @@
 > **Leer este archivo antes de ejecutar cualquier `/opsx:propose`.**
 
 > **Nota de alcance (cátedra — Change OPSX 25% = 1 change):** este roadmap contiene
-> **un único change** (`C-01 turnos-mvp`) que cubre CU01 (agendar recepcionista) +
-> CU02 (reserva guest online) encadenadas, con RN01–RN05 como núcleo y CU03/CU04
-> en alcance mínimo operable. Decisión registrada en Discovery (`change_scope`).
+> **un único change** (`C-01 turnos-mvp`): alta de un turno evitando solapamientos
+> por profesional y por sillón/box (CU01 + RN02, el ejemplo de la consigna), con
+> RN01/RN03 solo como soporte necesario del flujo. CU02 (reserva guest), CU03
+> (cancelación/reprogramación) y CU04 (agenda) son trabajo futuro, fuera del change.
+> Decisión registrada en Discovery (`change_scope`).
 
 ---
 
@@ -45,13 +47,13 @@ C-01
 ### Plan óptimo con 3 agentes
 
 ```
-Paso │ Agente A (Backend Core) │ Agente B (Backend Aux) │ Agente C (Frontend)
+Paso │ Agente A (API alta) │ Agente B (Tests RN02) │ Agente C (Docs Verify)
 ─────┼─────────────────────────┼────────────────────────┼─────────────────────────
-  1  │ C-01 turnos-mvp         │         —              │         —
+  1  │ C-01 turnos-mvp         │ C-01 turnos-mvp         │ C-01 turnos-mvp
 ```
 
 > Con un solo change y un solo integrante no hay paralelismo explotable.
-> La tabla se mantiene por contrato de formato. P0-sys = API/backend puro, sin frontend.
+> La tabla se mantiene por contrato de formato. Todo el proyecto es API/backend puro, sin frontend.
 
 ---
 
@@ -61,29 +63,23 @@ Paso │ Agente A (Backend Core) │ Agente B (Backend Aux) │ Agente C (Fronte
 
 ### [C-01] `turnos-mvp`
 - **Estado**: `[x]` archivado (`openspec/changes/archive/2026-10-03-turnos-mvp/`)
-- **Scope**: MVP API puro FastAPI + PostgreSQL 16 con invariante RN02 en persistencia (CU01 + CU02, CU03/CU04 mínimo operable)
+- **Scope**: MVP API puro FastAPI + PostgreSQL 16 con invariante RN02 en persistencia (solo CU01: alta evitando solapamientos; CU02/CU03/CU04 fuera del change)
   - `docker-compose.yml`: servicio `db` Postgres 16 con extensión `btree_gist` habilitada
   - `alembic/versions/`: Migración 001 tablas (`profesional`, `sillon`, `prestacion`, `paciente_guest`, `turno`, `horario_atencion`); Migración 002 doble `EXCLUDE USING gist` (`profesional_id WITH =`, `sillon_id WITH =`, `tstzrange(inicio, fin) WITH &&`) `WHERE (estado = 'activo')` + `CHECK (fin > inicio)`
-  - Modelos: `Profesional`, `Sillon`, `Prestacion`, `PacienteGuest` (solo contacto, sin DNI/clínico), `Turno` (`inicio`, `fin = inicio + duracion prestacion`, `estado activo/cancelado`, `token_cancelacion`, `cancelled_at`), `HorarioAtencion` (global + por profesional)
-  - `app/domain/rules.py`: RN01 (cálculo `fin`), RN03 (pasado vs `now()` en `America/Argentina/Buenos_Aires` + horario), RN04 (cancelar = `UPDATE estado`), RN05 (máx. 1 activo por paciente/día — cierra IN-01 de `10_preguntas_abiertas.md`: índice parcial o validación + test) como funciones puras testeables
-  - `POST /turnos` (US-001, con API key recepcionista): crea turno, calcula `fin` por RN01; 409 `RN02_PROFESIONAL`/`RN02_SILLON`/`RN05`, 422 pasado/fuera de horario; notificación mock best-effort sin bloquear persistencia
-  - `GET /disponibilidad?profesional_id=&fecha=&prestacion_id=` (US-002): huecos desde `HorarioAtencion` menos turnos activos, respeta duración RN01, determinista
-  - `POST /reservas` (US-003, público sin auth + rate-limit en memoria `10/min`): mismas validaciones que US-001, devuelve 201 + `token_cancelacion`; `sillon_id` opcional con auto-asignación al primero libre
-  - `POST /reservas/{token}/cancelacion` (US-004 guest): cancela solo la reserva propia; `DELETE/PATCH /turnos/{id}` para recepcionista; reprogramación atómica transaccional (US-005): si el destino choca, rollback y el original sigue activo
-  - `GET /agenda?profesional_id=&fecha=` (US-006, API key odontólogo, solo agenda propia, 403 ajena): activos ordenados por `inicio` con prestación/sillón/paciente; cancelados solo con `?incluir_cancelados=true`
-  - `GET /profesionales`, `/sillones`, `/prestaciones` (lectura pública mínima para armar la reserva) + `GET /docs`, `/openapi.json`
-  - `app/notifications/`: `NotificationService` (abc) + `MockNotificationService` (registra, no envía; `NOTIF_BACKEND=mock`)
-  - `app/core/security.py`: auth mínima por rol (API keys por env `API_KEY_RECEPCION` / `API_KEY_ODONTOLOGO`); middleware traduce `IntegrityError` por EXCLUDE → 409 con código de regla, nunca 500; Pydantic → 422; rechazo explícito de campos clínicos con 422
-  - Seed MVP: 2–3 profesionales, 2 sillones, 3 prestaciones (30/45/90 min), horario Lun–Vie 9–18 + Sáb 9–12, 1 turno activo + 1 cancelado de ejemplo; `.env.example` con `DATABASE_URL`, `TZ_CONSULTORIO`, rate-limit (sin secretos reales)
-  - Tests: `test_rn02_solapamiento.py` (borde que se toca `[)` no choca, doble eje profesional/sillón, cancelado libera slot), `test_rn02_concurrencia.py` (2 `POST` concurrentes al mismo slot → una 201 + otra 409, contra Postgres real), `test_reserva_guest.py` (e2e guest + cancelación con token + RN05 un activo/día)
+  - Modelos: `Profesional`, `Sillon`, `Prestacion`, `PacienteGuest` (solo contacto, sin DNI/clínico), `Turno` (`inicio`, `fin = inicio + duracion prestacion`, `estado activo`), `HorarioAtencion`
+  - `app/domain/rules.py`: RN01 (cálculo `fin`) y RN03 (pasado vs `now()` en `America/Argentina/Buenos_Aires` + horario) como funciones puras testeables, solo como soporte del alta
+  - `POST /turnos` (US-001, con API key recepcionista): crea turno, calcula `fin` por RN01; 409 `RN02_PROFESIONAL`/`RN02_SILLON`, 422 pasado/fuera de horario
+  - `app/core/security.py`: auth mínima (API key recepcionista por env); middleware traduce `IntegrityError` por EXCLUDE → 409 con código de regla, nunca 500; Pydantic → 422; rechazo explícito de campos clínicos con 422
+  - Seed mínimo: profesionales, sillones y prestaciones ficticias + horario de atención; `.env.example` con `DATABASE_URL`, `TZ_CONSULTORIO` (sin secretos reales)
+  - Tests: `test_rn02_solapamiento.py` (borde que se toca `[)` no choca, doble eje profesional/sillón), `test_rn02_concurrencia.py` (2 `POST` concurrentes al mismo slot → una 201 + otra 409, contra Postgres real)
 - **Dependencias**: ninguna
-- **Governance**: MEDIO (lógica de negocio + invariante de concurrencia RN02; checkpoints por ser el núcleo evaluado. No escala a CRITICO/ALTO: guest sin auth real, notificaciones mock, sin pagos/facturación/ficha clínica en MVP)
+- **Governance**: MEDIO (lógica de negocio + invariante de concurrencia RN02; checkpoints por ser el núcleo evaluado)
 - **Leer antes**:
-  - `knowledge-base/04_modelo_de_datos.md` §Turno (EXCLUDE x2, `btree_gist`, borde `[)`, RN05)
-  - `knowledge-base/05_reglas_de_negocio.md` §RN02 (invariante central) + §Excepciones globales (409/422, mock best-effort)
-  - `knowledge-base/06_funcionalidades.md` §US-001 + §US-003 (criterios de aceptación del núcleo)
-  - `knowledge-base/07_flujos_principales.md` §Flujo 1 + §Flujo 2 (secuencia reserva/alta, casos de error concurrente)
-  - `knowledge-base/08_arquitectura_propuesta.md` §Estructura de directorios + §Seguridad (auth mínima, rate-limit, env vars)
+  - `knowledge-base/04_modelo_de_datos.md` §Turno (EXCLUDE x2, `btree_gist`, borde `[)`)
+  - `knowledge-base/05_reglas_de_negocio.md` §RN02 (invariante central) + §Excepciones globales (409/422)
+  - `knowledge-base/06_funcionalidades.md` §US-001 (criterios de aceptación del alta)
+  - `knowledge-base/07_flujos_principales.md` §Flujo 2 (alta por recepcionista)
+  - `knowledge-base/08_arquitectura_propuesta.md` §Estructura de directorios + §Seguridad (auth mínima, env vars)
 
 ---
 
