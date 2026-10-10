@@ -1,4 +1,4 @@
-"""Alembic sync (psycopg). Migraciones 001 tablas, 002 EXCLUDE+RN05."""
+"""Alembic sync (psycopg). Migraciones 001 tablas, 002 EXCLUDE, 003 recorte."""
 import os
 import sys
 

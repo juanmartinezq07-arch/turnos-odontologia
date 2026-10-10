@@ -3,8 +3,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.api.v1 import agenda, catalogos, disponibilidad, reservas, turnos
-from app.api.v1.reservas import RateLimited
+from app.api.v1 import turnos
 from app.core.errors import DomainConflict, NotFound
 
 
@@ -17,15 +16,11 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(DomainConflict)
     async def _conflicto(_: Request, exc: DomainConflict):
-        return _error(exc.code, exc.message, 409)
+        return _error(exc.code, exc.message, exc.status)
 
     @app.exception_handler(NotFound)
     async def _no_encontrado(_: Request, exc: NotFound):
         return _error(exc.code, exc.message, 404)
-
-    @app.exception_handler(RateLimited)
-    async def _rate_limit(_: Request, __: RateLimited):
-        return _error("RATE_LIMIT", "Excedio el limite de reservas por minuto", 429)
 
     @app.exception_handler(RequestValidationError)
     async def _validacion(_: Request, exc: RequestValidationError):
@@ -39,10 +34,6 @@ def create_app() -> FastAPI:
         return _error(code, str(exc.detail), exc.status_code)
 
     app.include_router(turnos.router, tags=["turnos"])
-    app.include_router(reservas.router, tags=["reservas"])
-    app.include_router(disponibilidad.router, tags=["disponibilidad"])
-    app.include_router(agenda.router, tags=["agenda"])
-    app.include_router(catalogos.router, tags=["catalogos"])
     return app
 
 

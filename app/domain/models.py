@@ -92,14 +92,8 @@ class Turno(Base):
     inicio: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     fin: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     estado: Mapped[str] = mapped_column(Text, nullable=False, default="activo")
-    token_cancelacion: Mapped[str | None] = mapped_column(
-        Text, unique=True, nullable=True
-    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    cancelled_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
     )
 
     __table_args__ = (
@@ -120,13 +114,6 @@ class Turno(Base):
             where=text("estado = 'activo'"),
             name="rn02_sillon",
             using="gist",
-        ),
-        Index(
-            "rn05_un_activo_por_dia",
-            "paciente_id",
-            text("(inicio AT TIME ZONE 'America/Argentina/Buenos_Aires')::date"),
-            unique=True,
-            postgresql_where=text("estado = 'activo'"),
         ),
         Index("idx_turno_profesional_inicio", "profesional_id", "inicio"),
         Index("idx_turno_sillon_inicio", "sillon_id", "inicio"),

@@ -70,7 +70,7 @@ async def seed(session: AsyncSession) -> dict:
             profesional_id=p1.id, sillon_id=s1.id, prestacion_id=c30.id,
             paciente_id=pa.id, inicio=inicio_cancelado,
             fin=inicio_cancelado + timedelta(minutes=30),
-            estado="cancelado", cancelled_at=ahora,
+            estado="cancelado",
         )
     )
     await session.commit()

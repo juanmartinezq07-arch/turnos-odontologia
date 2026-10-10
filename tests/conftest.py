@@ -1,14 +1,17 @@
 """Fixtures contra Postgres 16 real. NUNCA SQLite (hard rule)."""
+import asyncio
 import os
+import sys
+
+if sys.platform == "win32":
+    # psycopg asincrono no funciona con ProactorEventLoop de Windows.
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 os.environ.setdefault("API_KEY_RECEPCION", "test-recepcion-key")
-os.environ.setdefault("API_KEY_ODONTOLOGO", "test-odonto-key")
 os.environ.setdefault(
     "DATABASE_URL", "postgresql+psycopg://turnos:turnos@localhost:5432/turnos"
 )
 os.environ.setdefault("TZ_CONSULTORIO", "America/Argentina/Buenos_Aires")
-os.environ.setdefault("NOTIF_BACKEND", "mock")
-os.environ.setdefault("RESERVA_RATE_LIMIT", "1000/minute")
 
 from datetime import datetime, time, timedelta
 from zoneinfo import ZoneInfo
@@ -75,15 +78,6 @@ async def client(db_engine):
     app.dependency_overrides.clear()
 
 
-@pytest.fixture(autouse=True)
-def _reset_rate_limit():
-    from app.api.v1 import reservas as reservas_router
-
-    reservas_router.reset_rate_limit()
-    yield
-    reservas_router.reset_rate_limit()
-
-
 @pytest_asyncio.fixture
 async def seed_catalog(db_engine):
     """2 profesionales, 2 sillones, 3 prestaciones 30/45/90, horario Lun-Vie 9-18 + Sab 9-12."""
@@ -135,8 +129,3 @@ def proximo_dia_habil(hora: int = 10, minuto: int = 0) -> datetime:
 @pytest.fixture
 def headers_recepcion():
     return {"X-API-Key": "test-recepcion-key"}
-
-
-@pytest.fixture
-def headers_odonto():
-    return {"X-API-Key": "test-odonto-key"}

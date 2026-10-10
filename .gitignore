@@ -1,7 +1,8 @@
 .env
 __pycache__/
 *.pyc
-.atl/
+.atl/*
+!.atl/skill-registry.md
 .pytest_cache/
 .venv/
 venv/

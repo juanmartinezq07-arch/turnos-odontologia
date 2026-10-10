@@ -3,9 +3,16 @@ from sqlalchemy.exc import IntegrityError
 
 
 class DomainConflict(Exception):
-    def __init__(self, code: str, message: str) -> None:
+    """Conflicto de dominio con codigo estable.
+
+    status por defecto 409 (RN02); las violaciones de validacion
+    temporal RN03 usan 422 segun spec.
+    """
+
+    def __init__(self, code: str, message: str, status: int = 409) -> None:
         self.code = code
         self.message = message
+        self.status = status
         super().__init__(message)
 
 
@@ -28,6 +35,4 @@ def conflict_code_from_integrity_error(exc: IntegrityError) -> str:
         return "RN02_PROFESIONAL"
     if "rn02_sillon" in texto:
         return "RN02_SILLON"
-    if "rn05" in texto:
-        return "RN05"
     return "CONFLICTO"
