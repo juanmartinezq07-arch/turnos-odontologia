@@ -105,6 +105,16 @@ Archivos:
 - `tests/test_rules.py` — RN01/RN03 puras, sin DB.
 - `tests/test_api_pure.py` — docs, auth 401, schemas estrictos, mapper 409.
 
+## Problemas comunes
+
+- **Puerto 5432 ocupado** (`ports are not available`): otro Postgres local usa el
+  puerto. Detené ese servicio o levantá un PG16 alternativo en otro puerto y
+  apuntá `DATABASE_URL` ahí (ej. `localhost:5433`) solo para tu corrida local.
+- **`localhost` lento en Windows**: si cada conexión tarda ~10 s, usá `127.0.0.1`
+  en `DATABASE_URL` (resolución IPv6 lenta en algunas máquinas).
+- **Tests que no conectan**: verificá `docker compose ps` (db en `healthy`) y que
+  `alembic upgrade head` esté en `head` (`alembic current`).
+
 ## Estructura
 
 ```

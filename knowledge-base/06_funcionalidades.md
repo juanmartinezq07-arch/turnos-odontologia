@@ -1,6 +1,6 @@
 # Funcionalidades
 
-Organizadas por épica. Alcance del change: CU01 + CU02 encadenadas con RN01–RN05 como núcleo. CU03/CU04 quedan en alcance mínimo operable (sin panel ni extras).
+Organizadas por épica. Alcance del change C-01: solo CU01 (alta evitando solapamientos, RN02 como núcleo; RN01/RN03 como soporte). CU02/CU03/CU04 y RN04/RN05 son trabajo futuro, fuera del change.
 
 ## Épica A: Agenda sin solapamientos (CU01)
 

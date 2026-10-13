@@ -1,5 +1,11 @@
 # Informe de Discovery competitivo — Sistemas de gestión odontológica
 
+**Trabajo de Integración — Metodología I, Tecnicatura Universitaria en Programación (UTN)**
+**Integrantes:** Juan Martinez, Isaias Morinigo
+**Fecha:** a rellenar
+
+---
+
 **Proyecto:** Sistema de turnos odontológicos para consultorios de Argentina
 **Materia:** Metodología I — Tecnicatura Universitaria en Programación (UTN)
 **Contexto:** Trabajo de Integración sobre Spec-Driven Development (OpenSpec) y Active Stack
