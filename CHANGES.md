@@ -173,7 +173,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 
 ### [C-25] `disponibilidad-real`
 - **Estado**: `[ ]` pendiente
-- **Scope**: `app/application/availability.py` como **función pura** de (HorarioAtencion − turnos activos, duración RN01, `now()` **inyectado**); sin random ni clock implícito. `GET /disponibilidad?profesional_id=&fecha=&prestacion_id=` (público). El bloque `[inicio, fin)` completo debe entrar en el horario (RN03); descarta el pasado. Tests: huecos correctos, bloque que no entra completo, borde `[)` no pisa activos, **determinismo** (dos consultas seguidas devuelven lo mismo).
+- **Scope**: `backend/app/application/availability.py` como **función pura** de (HorarioAtencion − turnos activos, duración RN01, `now()` **inyectado**); sin random ni clock implícito. `GET /disponibilidad?profesional_id=&fecha=&prestacion_id=` (público). El bloque `[inicio, fin)` completo debe entrar en el horario (RN03); descarta el pasado. Tests: huecos correctos, bloque que no entra completo, borde `[)` no pisa activos, **determinismo** (dos consultas seguidas devuelven lo mismo).
 - **Dependencias**: `C-01`
 - **Governance**: BAJO — lógica de lectura pura, sin invariantes nuevas ni escrituras
 - **Leer antes**: `KB-06 §US-002` · `KB-07 §Flujo 1` · `KB-05 §Temporalidad` · `KB-04 §HorarioAtencion`

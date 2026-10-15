@@ -10,15 +10,26 @@ Scope: proyecto **turnos-odontologia (TurnosAR)** — API FastAPI + PostgreSQL 1
 
 ## User Skills
 
+> Todas versionadas en el repo bajo `.agents/skills/` (autocontenido; sin dependencias de `~/.agents/skills` ni `~/.config/opencode/skills`).
+
 | Trigger | Skill | Path |
 |---------|-------|------|
-| FastAPI endpoints, routers, Pydantic v2, exception handlers | fastapi | `~/.config/opencode/skills/fastapi/SKILL.md` (declarada en find-skill; SKILL.md no presente en disco al generar registry) |
-| FastAPI project scaffolding, layout, main factory, settings | fastapi-templates | `~/.config/opencode/skills/fastapi-templates/SKILL.md` (declarada; no presente en disco) |
-| async/await, AsyncSession, concurrency, background tasks | async-python-patterns | `~/.config/opencode/skills/async-python-patterns/SKILL.md` (declarada; no presente en disco) |
-| pytest, httpx, fixtures, coverage of business rules | python-testing-patterns | `~/.config/opencode/skills/python-testing-patterns/SKILL.md` (declarada; no presente en disco) |
-| test-driven development, RED-GREEN-REFACTOR | tdd | `~/.config/opencode/skills/tdd/SKILL.md` (declarada; no presente en disco) |
-| Postgres EXCLUDE, gist, RLS, migrations, btree_gist | supabase-postgres-best-practices | `~/.config/opencode/skills/supabase-postgres-best-practices/SKILL.md` (declarada; no presente en disco) |
-| Docker Compose, Postgres service, local dev infra | docker-patterns | `~/.config/opencode/skills/docker-patterns/SKILL.md` (declarada; no presente en disco — ver precaucion High Risk arriba) |
+| FastAPI endpoints, routers, Pydantic v2, exception handlers | fastapi | `.agents/skills/fastapi/SKILL.md` |
+| FastAPI project scaffolding, layout, main factory, settings | fastapi-templates | `.agents/skills/fastapi-templates/SKILL.md` |
+| async/await, AsyncSession, concurrency, background tasks | async-python-patterns | `.agents/skills/async-python-patterns/SKILL.md` |
+| pytest, httpx, fixtures, coverage of business rules | python-testing-patterns | `.agents/skills/python-testing-patterns/SKILL.md` |
+| test-driven development, RED-GREEN-REFACTOR | tdd | `.agents/skills/tdd/SKILL.md` |
+| Postgres EXCLUDE, gist, RLS, migrations, btree_gist | supabase-postgres-best-practices | `.agents/skills/supabase-postgres-best-practices/SKILL.md` |
+| Docker Compose, Postgres service, local dev infra | docker-patterns | `.agents/skills/docker-patterns/SKILL.md` (ver precaucion High Risk arriba) |
+| foundation flow, steps init/kb/rules/discovery/openspec/devops/find-skill | active-orchestrator | `.agents/skills/active-orchestrator/SKILL.md` |
+| generar/actualizar AGENTS.md o CLAUDE.md | agent-instruction | `.agents/skills/agent-instruction/SKILL.md` |
+| fase Discovery, competidores, Q&A de checklist | discovery-research | `.agents/skills/discovery-research/SKILL.md` |
+| descubrir/instalar skills ("how do I do X") | find-skill | `.agents/skills/find-skill/SKILL.md` |
+| crear knowledge-base en knowledge-base/ | kb-creator | `.agents/skills/kb-creator/SKILL.md` |
+| crear/actualizar CHANGES.md roadmap | roadmap-generator | `.agents/skills/roadmap-generator/SKILL.md` |
+| crear/editar/mejorar skills | skill-creator | `.agents/skills/skill-creator/SKILL.md` |
+| actualizar este registry | skill-registry | `.agents/skills/skill-registry/SKILL.md` |
+| investigar un competidor a partir de una URL | web-scraper | `.agents/skills/web-scraper/SKILL.md` |
 | "openspec propose" or "opsx propose" | openspec-propose | `.agents/skills/openspec-propose/SKILL.md` |
 | "openspec explore" or "opsx explore" | openspec-explore | `.agents/skills/openspec-explore/SKILL.md` |
 | "openspec apply", "opsx apply" or "openspec implement" | openspec-apply-change | `.agents/skills/openspec-apply-change/SKILL.md` |
@@ -31,7 +42,7 @@ Scope: proyecto **turnos-odontologia (TurnosAR)** — API FastAPI + PostgreSQL 1
 Pre-digested rules per skill. Delegators copy matching blocks into sub-agent prompts as `## Project Standards (auto-resolved)`.
 
 ### fastapi — matchea C-01: POST /turnos, GET /disponibilidad, POST /reservas, GET /agenda, catalogos
-- Routers finos en `app/api/v1/` (turnos, reservas, disponibilidad, agenda); los routers NUNCA tocan la DB directo — delegan a `app/application/` (bookings.py, availability.py).
+- Routers finos en `backend/app/api/v1/` (turnos, reservas, disponibilidad, agenda); los routers NUNCA tocan la DB directo — delegan a `backend/app/application/` (bookings.py, availability.py).
 - Pydantic v2 en el borde: request/response schemas estrictos; el cliente manda `inicio` pero NUNCA `fin` (RN01 lo calcula el servidor como `inicio + duracion_prestacion`); rechazar campos clinicos con 422.
 - Exception handlers globales en `app/main.py`: `IntegrityError` por EXCLUDE → 409 con codigo de regla (`RN02_PROFESIONAL` / `RN02_SILLON` / `RN05`), nunca 500; validacion Pydantic → 422.
 - Auth minima por rol en `app/core/security.py` via API keys por env (`API_KEY_RECEPCION`, `API_KEY_ODONTOLOGO`); `POST /reservas` y `POST /reservas/{token}/cancelacion` son publicos (guest booking), el resto exige key; odontologo solo lee su agenda (403 ajena).
@@ -39,7 +50,7 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 - Notificacion mock best-effort: se dispara tras persistir, si falla no hace rollback del turno.
 
 ### fastapi-templates — matchea C-01: andamiaje del repo
-- Layout obligatorio (KB 08): `app/main.py` (factory), `app/core/{config,security}.py`, `app/domain/{models,rules}.py`, `app/application/{bookings,availability}.py`, `app/notifications/{interface,mock}.py`, `app/api/v1/*`, `app/schemas/`, `alembic/versions/`, `tests/`, `docker-compose.yml`, `.env.example`.
+- Layout obligatorio (KB 08): `backend/app/main.py` (factory), `backend/app/core/{config,security}.py`, `backend/app/domain/{models,rules}.py`, `backend/app/application/{bookings,availability}.py`, `backend/app/notifications/{interface,mock}.py`, `backend/app/api/v1/*`, `backend/app/schemas/`, `backend/alembic/versions/`, `backend/tests/`, `docker-compose.yml` (raíz), `backend/.env.example`. Todo comando Python se corre desde `backend/`.
 - `main.py` solo cablea: crea app, registra routers, handlers y middleware; nada de logica de dominio ahi.
 - `core/config.py`: settings solo via env vars (`DATABASE_URL`, `TZ_CONSULTORIO=America/Argentina/Buenos_Aires`, `NOTIF_BACKEND=mock`, `RESERVA_RATE_LIMIT`); `.env.example` con placeholders, NUNCA secretos reales.
 - Seed MVP minimo: 2–3 profesionales, 2 sillones, 3 prestaciones (30/45/90 min), horario Lun–Vie 9–18 + Sab 9–12, 1 turno activo + 1 cancelado de ejemplo, todo ficticio.
@@ -63,7 +74,7 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 ### tdd — matchea C-01: TDD estricto en todo el change
 - Ciclo RED-GREEN-REFACTOR obligatorio por cada US y por cada RN: escribir el test que falla primero (`test_rn02_*`, criterios de `06_funcionalidades.md`), luego el minimo codigo que lo hace pasar.
 - Orden sugerido: RN01 (calculo `fin`) → RN03 (pasado/horario) → RN02 secuencial → RN04 (cancelar libera) → RN05 (1 activo/dia) → RN02 concurrencia → endpoints guest → agenda/roles.
-- `app/domain/rules.py` como funciones puras (RN01/RN03/RN04/RN05) testeables sin DB ni FastAPI; RN02 vive en la DB (EXCLUDE), no duplicar su logica en Python mas alla de la validacion previa amable (409 anticipado).
+- `backend/app/domain/rules.py` como funciones puras (RN01/RN03/RN04/RN05) testeables sin DB ni FastAPI; RN02 vive en la DB (EXCLUDE), no duplicar su logica en Python mas alla de la validacion previa amable (409 anticipado).
 - Un test por comportamiento, nombres que citan la regla (`test_rn02_borde_que_se_toca_no_choca`); nada de tests que verifiquen implementacion interna (mocks de SQLAlchemy).
 - No avanzar al siguiente US con tests rojos; la demo de catedra corre la suite completa antes de presentar.
 

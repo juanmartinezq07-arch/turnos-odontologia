@@ -1,10 +1,16 @@
 .env
+backend/.env
 __pycache__/
 *.pyc
 .atl/*
 !.atl/skill-registry.md
 .pytest_cache/
+backend/.pytest_cache/
 .venv/
+backend/.venv/
 venv/
 *.egg-info/
+backend/*.egg-info/
 .engram/
+frontend/node_modules/
+frontend/dist/

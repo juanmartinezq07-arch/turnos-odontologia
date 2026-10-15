@@ -48,7 +48,7 @@ La fuente de verdad del dominio vive en `knowledge-base/`. **Leé el archivo rel
 
 ## Skills Disponibles
 
-Fuente de verdad: `.atl/skill-registry.md` (generado por `skill-registry`; 7 skills de dominio + workflow openspec).
+Fuente de verdad: `.atl/skill-registry.md` (22 skills versionadas en `.agents/skills/`: 7 de dominio + 9 de workflow/fundación + 6 openspec).
 
 | Agente | Rol | Skills que carga |
 |--------|-----|------------------|
@@ -59,7 +59,7 @@ Fuente de verdad: `.atl/skill-registry.md` (generado por `skill-registry`; 7 ski
 
 Cargá la skill correspondiente al contexto ANTES de escribir código.
 
-> Los compact rules de cada skill los resuelve el orquestador desde `.atl/skill-registry.md` (generado por `skill-registry`; no versionado — no está en el repo). Esta tabla solo mapea skill→rol.
+> Los compact rules de cada skill los resuelve el orquestador desde `.atl/skill-registry.md`. Las skills viven en `.agents/skills/` dentro del repo (autocontenido). Esta tabla solo mapea skill→rol.
 
 ---
 
@@ -69,7 +69,7 @@ El plan de implementación completo está en [CHANGES.md](CHANGES.md), que es un
 
 - **Total**: 17 changes. `C-01` `[x]` entregado; `C-20`…`C-35` `[ ]` en 4 fases.
 - **Entregado**: `C-01 turnos-mvp` — MVP API puro FastAPI + PostgreSQL 16 con invariante RN02 en persistencia. Governance MEDIO. Sin dependencias.
-- **Alcance real implementado por C-01** (verificado en el código, no en la spec): `POST /turnos` como **único endpoint**; `docker-compose.yml` (servicio `db` PG16 + `btree_gist`); Alembic 001 (tablas) + 002 (doble EXCLUDE) + 003 (recorte); modelos `Profesional/Sillon/Prestacion/PacienteGuest/Turno/HorarioAtencion`; `app/domain/rules.py` con **RN01 y RN03 puras**; auth mínima por API key de recepcionista; seed ficticio; **26 tests en 5 archivos** contra Postgres real.
+- **Alcance real implementado por C-01** (verificado en el código, no en la spec): `POST /turnos` como **único endpoint**; `docker-compose.yml` (servicio `db` PG16 + `btree_gist`); Alembic 001 (tablas) + 002 (doble EXCLUDE) + 003 (recorte); modelos `Profesional/Sillon/Prestacion/PacienteGuest/Turno/HorarioAtencion`; `backend/app/domain/rules.py` con **RN01 y RN03 puras**; auth mínima por API key de recepcionista; seed ficticio; **26 tests en 5 archivos** contra Postgres real.
 - **Lo que C-01 NO incluye** (para no volver a planificar como pendiente lo que ya está): RN04, RN05, `NotificationService`, `GET /disponibilidad`, `POST /reservas`, `GET /agenda`, catálogos, frontend. **`POST /turnos` no se replanifica.**
 - **Ramas del árbol**: PERSISTENCIA (`C-20`, `C-21` — el esquema va antes que la API) ‖ API DE LECTURA (`C-24`, `C-25`, `C-27`) ‖ TRANSVERSAL (`C-28`, `C-30`) → CONFLUENCIAS (`C-26`, `C-22`→`C-23`, `C-29`) → FRONTEND (`C-31`…`C-35`, **bloqueados** por `C-30`).
 - **Camino crítico**: 2 cadenas de 6 nodos (`C-01→C-21→C-26→C-29→C-31→C-35` y `C-01→C-20→C-22→C-23→C-31→C-34`). El frontend **no** es el cuello de botella. GATE 1 abre 7 changes en paralelo.
@@ -98,8 +98,8 @@ El plan de implementación completo está en [CHANGES.md](CHANGES.md), que es un
 ### Stack real (Python/FastAPI + PG16 — confirmadas)
 
 - NUNCA schema Pydantic sin `extra='forbid'` → rechazar campos no declarados (el cliente manda `inicio` pero NUNCA `fin`; RN01 calcula `fin = inicio + duración_prestación` en el servidor).
-- NUNCA código Python sin `snake_case` + type hints → todo el dominio (`app/domain/rules.py` con RN01/RN03/RN04/RN05 como funciones puras testeables sin DB ni FastAPI).
-- NUNCA lógica de dominio en routers ni en `main.py` → routers finos en `app/api/v1/` delegan a `app/application/` (`bookings.py`, `availability.py`); `main.py` solo cablea (app, routers, handlers, middleware). Layout obligatorio KB 08: `app/main.py`, `app/core/{config,security}.py`, `app/domain/{models,rules}.py`, `app/application/{bookings,availability}.py`, `app/notifications/{interface,mock}.py`, `app/api/v1/*`, `app/schemas/`, `alembic/versions/`, `tests/`, `docker-compose.yml`, `.env.example`.
+- NUNCA código Python sin `snake_case` + type hints → todo el dominio (`backend/app/domain/rules.py` con RN01/RN03/RN04/RN05 como funciones puras testeables sin DB ni FastAPI).
+- NUNCA lógica de dominio en routers ni en `main.py` → routers finos en `backend/app/api/v1/` delegan a `backend/app/application/` (`bookings.py`, `availability.py`); `main.py` solo cablea (app, routers, handlers, middleware). Layout obligatorio KB 08: `backend/app/main.py`, `backend/app/core/{config,security}.py`, `backend/app/domain/{models,rules}.py`, `backend/app/application/{bookings,availability}.py`, `backend/app/notifications/{interface,mock}.py`, `backend/app/api/v1/*`, `backend/app/schemas/`, `backend/alembic/versions/`, `backend/tests/`, `frontend/` (placeholder bloqueado por C-30), `docker-compose.yml` (raíz), `backend/.env.example`. Todo comando Python se corre desde `backend/`.
 - NUNCA settings fuera de env vars → `core/config.py` solo lee `DATABASE_URL`, `TZ_CONSULTORIO=America/Argentina/Buenos_Aires`, `NOTIF_BACKEND=mock`, `RESERVA_RATE_LIMIT`.
 - NUNCA `datetime` naive → todo timezone-aware (`timestamptz`); RN03 compara contra `now()` en `America/Argentina/Buenos_Aires`.
 - NUNCA introducir frontend, Celery/Redis ni ficha clínica en C-01 → API pura, notificaciones mock en proceso.
@@ -114,7 +114,7 @@ El plan de implementación completo está en [CHANGES.md](CHANGES.md), que es un
 
 ### Auth mínima, guest público, notify mock
 
-- NUNCA auth real pesada en C-01 → API keys por env (`API_KEY_RECEPCION`, `API_KEY_ODONTOLOGO`) en `app/core/security.py`; `POST /reservas` y `POST /reservas/{token}/cancelacion` públicos (guest sin auth) con rate-limit en memoria `10/min`; odontólogo solo lee su agenda (403 ajena); `sillon_id` opcional con auto-asignación al primero libre.
+- NUNCA auth real pesada en C-01 → API keys por env (`API_KEY_RECEPCION`, `API_KEY_ODONTOLOGO`) en `backend/app/core/security.py`; `POST /reservas` y `POST /reservas/{token}/cancelacion` públicos (guest sin auth) con rate-limit en memoria `10/min`; odontólogo solo lee su agenda (403 ajena); `sillon_id` opcional con auto-asignación al primero libre.
 - NUNCA notificar de forma bloqueante → mock best-effort tras persistir (`NOTIF_BACKEND=mock`, registra sin enviar); si falla, loguea y sigue sin rollback.
 
 ### Precaución docker-patterns (Snyk High Risk)

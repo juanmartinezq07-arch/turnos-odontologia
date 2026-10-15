@@ -21,7 +21,7 @@ trabajo futuro, fuera del change.
 
 ```bash
 git clone <url-del-repo>
-cd turnos-odontologia
+cd turnos-odontologia/backend
 
 python -m venv .venv
 # Windows:
@@ -36,6 +36,7 @@ pip install uvicorn
 ## Configuración
 
 ```bash
+cd backend
 copy .env.example .env        # Windows
 # cp .env.example .env        # Linux/macOS
 ```
@@ -50,9 +51,16 @@ Variables: `DATABASE_URL`, `POSTGRES_PASSWORD`, `TZ_CONSULTORIO`,
 ## Levantar la base y migrar
 
 ```bash
-docker compose up -d db
-alembic upgrade head
+docker compose up -d db     # desde la raíz del repo
+cd backend
+python -m alembic upgrade head
 ```
+
+> Con el venv activado, usar siempre `python -m ...`: los `.exe` del venv
+> están rotos en esta máquina (salen con código 1 sin mensaje). El
+> `backend/.env` se carga solo (nada que exportar salvo que quieras
+> pisar valores); se usa `127.0.0.1` porque `localhost` resuelve lento
+> a IPv6 en Windows.
 
 Esto crea las tablas (migración 001), el doble `EXCLUDE` de RN02 más el
 `CHECK (fin > inicio)` (migración 002, con `btree_gist`) y el recorte de
@@ -61,6 +69,7 @@ alcance (migración 003, nunca se edita una migración aplicada).
 ## Datos de ejemplo (ficticios)
 
 ```bash
+cd backend
 python -m app.seed
 ```
 
@@ -70,7 +79,8 @@ Lun–Vie 9–18 + Sáb 9–12. Todo sintético (`@example.com`).
 ## Correr la API
 
 ```bash
-uvicorn app.main:app --reload
+cd backend
+python -m uvicorn app.main:app --reload
 ```
 
 - Swagger: http://127.0.0.1:8000/docs
@@ -91,8 +101,9 @@ Los tests de RN02 van **contra Postgres 16 real** (nunca SQLite ni mocks
 de DB), así que la base tiene que estar levantada:
 
 ```bash
-docker compose up -d db
-pytest -v
+docker compose up -d db     # desde la raíz del repo
+cd backend
+python -m pytest -v
 ```
 
 Archivos:
@@ -118,17 +129,21 @@ Archivos:
 ## Estructura
 
 ```
-app/                  # API (main.py solo cablea el router)
-app/core/             # config por env vars + seguridad (API key)
-app/domain/           # models.py + rules.py (RN01/RN03 puras)
-app/application/      # bookings.py (alta transaccional)
-app/api/v1/           # turnos.py (POST /turnos)
-app/schemas/          # TurnoCreate/TurnoOut estrictos (sin campo fin)
-alembic/versions/     # 001 tablas, 002 doble EXCLUDE, 003 recorte
-tests/                # suite pytest contra Postgres real
+backend/                # API FastAPI (todo comando Python desde acá)
+backend/app/            # API (main.py solo cablea el router)
+backend/app/core/       # config por env vars + seguridad (API key)
+backend/app/domain/     # models.py + rules.py (RN01/RN03 puras)
+backend/app/application/ # bookings.py (alta transaccional)
+backend/app/api/v1/     # turnos.py (POST /turnos)
+backend/app/schemas/    # TurnoCreate/TurnoOut estrictos (sin campo fin)
+backend/alembic/versions/ # 001 tablas, 002 doble EXCLUDE, 003 recorte
+backend/tests/          # suite pytest contra Postgres real
+frontend/               # placeholder BLOQUEADO por C-30 (solo README)
+docker-compose.yml      # raíz: orquesta db (+ futuro frontend)
 docs/discovery/       # informe-discovery.md + .pdf + verificación de fuentes
 knowledge-base/       # los 10 archivos canónicos del dominio
 openspec/             # specs vigentes (turnos, plataforma-mvp) + change archivado
+.agents/skills/         # skills versionadas en el repo (ver AGENTS.md)
 ```
 
 ## Documentos del trabajo

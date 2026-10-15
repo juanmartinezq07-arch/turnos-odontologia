@@ -18,38 +18,45 @@ Prioriza **mantenibilidad con foco en velocidad de entrega** (P5 = b): código c
 
 ```
 turnos-odontologia/
-├── docker-compose.yml          # servicio db (Postgres 16 + btree_gist)
-├── alembic/                    # migraciones (la de EXCLUDE es la crítica)
-│   └── versions/
-├── app/
-│   ├── main.py                 # factory FastAPI, routers, exception handlers
-│   ├── core/
-│   │   ├── config.py           # settings via env vars
-│   │   └── security.py         # auth mínima por rol (API key / usuario fijo)
-│   ├── domain/
-│   │   ├── models.py           # SQLAlchemy 2.0: Profesional, Sillon, Prestacion, PacienteGuest, Turno, HorarioAtencion
-│   │   └── rules.py            # RN01/RN03/RN04/RN05 como funciones puras testeables
-│   ├── application/
-│   │   ├── availability.py     # cómputo de slots (US-002)
-│   │   └── bookings.py         # agendar / reservar / cancelar / reprogramar
-│   ├── notifications/
-│   │   ├── interface.py        # NotificationService (abc)
-│   │   └── mock.py             # MockNotificationService (registra, no envía)
-│   ├── api/
-│   │   └── v1/
-│   │       ├── disponibilidad.py
-│   │       ├── turnos.py
-│   │       ├── reservas.py
-│   │       └── agenda.py
-│   └── schemas/                # Pydantic v2 request/response
-├── tests/
-│   ├── test_rn02_solapamiento.py   # secuencial: borde que se toca, doble eje
-│   ├── test_rn02_concurrencia.py   # real: 2 hilos/procesos al mismo slot
-│   └── test_reserva_guest.py       # end-to-end guest + cancelación
+├── docker-compose.yml          # raíz: orquesta db (Postgres 16 + btree_gist) + futuro frontend
+├── backend/
+│   ├── alembic/                # migraciones (la de EXCLUDE es la crítica)
+│   │   └── versions/
+│   ├── app/
+│   │   ├── main.py             # factory FastAPI, routers, exception handlers
+│   │   ├── core/
+│   │   │   ├── config.py       # settings via env vars
+│   │   │   └── security.py     # auth mínima por rol (API key / usuario fijo)
+│   │   ├── domain/
+│   │   │   ├── models.py       # SQLAlchemy 2.0: Profesional, Sillon, Prestacion, PacienteGuest, Turno, HorarioAtencion
+│   │   │   └── rules.py        # RN01/RN03/RN04/RN05 como funciones puras testeables
+│   │   ├── application/
+│   │   │   ├── availability.py # cómputo de slots (US-002)
+│   │   │   └── bookings.py     # agendar / reservar / cancelar / reprogramar
+│   │   ├── notifications/
+│   │   │   ├── interface.py    # NotificationService (abc)
+│   │   │   └── mock.py         # MockNotificationService (registra, no envía)
+│   │   ├── api/
+│   │   │   └── v1/
+│   │   │       ├── disponibilidad.py
+│   │   │       ├── turnos.py
+│   │   │       ├── reservas.py
+│   │   │       └── agenda.py
+│   │   └── schemas/            # Pydantic v2 request/response
+│   ├── tests/
+│   │   ├── test_rn02_solapamiento.py   # secuencial: borde que se toca, doble eje
+│   │   ├── test_rn02_concurrencia.py   # real: 2 hilos/procesos al mismo slot
+│   │   └── test_reserva_guest.py       # end-to-end guest + cancelación
+│   ├── pyproject.toml
+│   └── .env.example
+├── frontend/                   # placeholder BLOQUEADO por C-30 (DD-01 sigue vigente)
+├── .agents/skills/             # skills versionadas en el repo
 ├── knowledge-base/             # esta KB
 ├── discovery/discovery.md      # artefacto Discovery (fuente)
 └── openspec/                   # specs y changes (un solo change)
 ```
+
+> Todo comando Python (`pytest`, `alembic`, `uvicorn`, `python -m app.seed`) se corre desde `backend/`.
 
 ## Seguridad
 
