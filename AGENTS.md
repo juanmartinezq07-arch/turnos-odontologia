@@ -65,14 +65,17 @@ Cargá la skill correspondiente al contexto ANTES de escribir código.
 
 ## Roadmap de Changes
 
-El plan de implementación completo está en [CHANGES.md](CHANGES.md). Resumen:
+El plan de implementación completo está en [CHANGES.md](CHANGES.md), que es un **árbol de dependencias con ramas** (no una lista ordenada). Resumen:
 
-- **Total**: 1 change en 1 fase (FASE 0 — MVP Turnos, única fase).
-- **Camino crítico** (1): `C-01`.
-- **Primer (= único) change**: `C-01 turnos-mvp` — MVP API puro FastAPI + PostgreSQL 16 con invariante RN02 en persistencia (CU01 + CU02 encadenadas, RN01–RN05 como núcleo, CU03/CU04 en alcance mínimo operable). Governance MEDIO. Sin dependencias, sin paralelismo real (un integrante).
-- **Alcance operativo C-01**: `docker-compose.yml` (servicio `db` PG16 + `btree_gist`); Alembic 001 (tablas) + 002 (doble EXCLUDE); modelos `Profesional/Sillon/Prestacion/PacienteGuest/Turno/HorarioAtencion`; `app/domain/rules.py` (RN01/RN03/RN04/RN05 puras); endpoints `POST /turnos`, `GET /disponibilidad`, `POST /reservas` (+ cancelación por token), `GET /agenda`, catálogos, `/docs`; `NotificationService` mock; auth mínima por API keys; seed ficticio; 3 archivos de test (`test_rn02_solapamiento`, `test_rn02_concurrencia`, `test_reserva_guest`).
+- **Total**: 17 changes. `C-01` `[x]` entregado; `C-20`…`C-35` `[ ]` en 4 fases.
+- **Entregado**: `C-01 turnos-mvp` — MVP API puro FastAPI + PostgreSQL 16 con invariante RN02 en persistencia. Governance MEDIO. Sin dependencias.
+- **Alcance real implementado por C-01** (verificado en el código, no en la spec): `POST /turnos` como **único endpoint**; `docker-compose.yml` (servicio `db` PG16 + `btree_gist`); Alembic 001 (tablas) + 002 (doble EXCLUDE) + 003 (recorte); modelos `Profesional/Sillon/Prestacion/PacienteGuest/Turno/HorarioAtencion`; `app/domain/rules.py` con **RN01 y RN03 puras**; auth mínima por API key de recepcionista; seed ficticio; **26 tests en 5 archivos** contra Postgres real.
+- **Lo que C-01 NO incluye** (para no volver a planificar como pendiente lo que ya está): RN04, RN05, `NotificationService`, `GET /disponibilidad`, `POST /reservas`, `GET /agenda`, catálogos, frontend. **`POST /turnos` no se replanifica.**
+- **Ramas del árbol**: PERSISTENCIA (`C-20`, `C-21` — el esquema va antes que la API) ‖ API DE LECTURA (`C-24`, `C-25`, `C-27`) ‖ TRANSVERSAL (`C-28`, `C-30`) → CONFLUENCIAS (`C-26`, `C-22`→`C-23`, `C-29`) → FRONTEND (`C-31`…`C-35`, **bloqueados** por `C-30`).
+- **Camino crítico**: 2 cadenas de 6 nodos (`C-01→C-21→C-26→C-29→C-31→C-35` y `C-01→C-20→C-22→C-23→C-31→C-34`). El frontend **no** es el cuello de botella. GATE 1 abre 7 changes en paralelo.
+- **Ids `C-02`…`C-07`**: superseded, reservados. No reutilizarlos — el mapeo al ids actual está en CHANGES.md § "Mapeo de ids".
 
-**Antes de cualquier `/opsx:propose`**: leé [CHANGES.md](CHANGES.md), identificá las dependencias del change y los archivos de "Leer antes" (KB 04 §Turno, 05 §RN02 + excepciones, 06 §US-001/US-003, 07 §Flujo 1/2, 08 §directorios/seguridad).
+**Antes de cualquier `/opsx:propose`**: leé [CHANGES.md](CHANGES.md) — las convenciones de lectura del árbol (§ "Convenciones de lectura del árbol"), localizá el próximo `[ ]` del GATE correspondiente y seguí sus "Leer antes" (KB 04 §Turno, 05 §RN02 + excepciones, 06 §US-001…US-006, 07 §Flujo 1/2, 08 §directorios/seguridad).
 
 ---
 
