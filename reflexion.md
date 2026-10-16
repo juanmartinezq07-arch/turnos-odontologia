@@ -24,3 +24,10 @@ implementado
 Consideramos que la parte que mas aporto en el ciclo OPSX fue el roadmap porque, si bien este se base en la kmowledge-base,
 define el que se va a hacer y en cuando pasos se termina. En cambio la parte que menos aporto fue las reglas porque estas
 son solo para que el agente no cometa errores a diferencia del roadmap que define todo
+
+5. En grupo: qué hizo cada integrante y en qué etapa
+
+Juan Ignacio genero gran parte del proyecto, esto porque al momento de hacer grupos cada uno ninguno tenia idea de esto
+asi que decidimos continuar con el proyecto del juan que estaba mas avanzado (casi terminado) Isaias Morinigo tomo el rol de 
+revisar si estaba todo en orden por eso sus commits son menos porque le indicaba a juan cuales eran los errores o archivos faltantes
+para que el pueda corregirlos 
