@@ -7,3 +7,7 @@ En general toda la informacion revisada estaba correcta sin embargo esta no era 
 el agente no nos proporciono la fuente o los enlaces de donde habia sacado la informacion, al pedirselo especificamente
 nos genero el archivo correctamente y todo lo que no puso estaba bien, solo falto que pusiera la verificacion
 
+2. ¿En qué etapa usaron Ajustar, qué estaba mal y qué habría pasado si hubieran apretado Continuar?
+
+Tuvimos que usar Ajustar en la parte del ciclo OPSX mas en la parte del propose, ya que no entendia del todo bien el como queriamos hacer el proyecto
+nos proponia hacerlo como memoria local, cosa que a futuro no nos convenia queriamos hacerlo un backend haciendo la api y la BD
