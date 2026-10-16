@@ -11,3 +11,10 @@ nos genero el archivo correctamente y todo lo que no puso estaba bien, solo falt
 
 Tuvimos que usar Ajustar en la parte del ciclo OPSX mas en la parte del propose, ya que no entendia del todo bien el como queriamos hacer el proyecto
 nos proponia hacerlo como memoria local, cosa que a futuro no nos convenia queriamos hacerlo un backend haciendo la api y la BD
+
+3. ¿Qué diferencia notaron entre implementar con una especificación aprobada y pedir código con un prompt
+suelto? 
+
+La principal diferencia es el como lo implementa y el resultado final, un ejemplo puede ser simplemente pedir que haga una api, esto haria solo
+los endpoint y con suerte una conexion con la base de datos, en cambio si lo hacemos con una especificacion el resultado final quedaria mucho mejor 
+implementado
