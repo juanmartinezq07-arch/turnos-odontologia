@@ -1,7 +1,7 @@
 # CHANGES — Secuencia de Implementación
 
 > Índice canónico de todos los changes de **TurnosAR**. Cada change es atómico: un agente lo implementa en una sesión (~4-6 h).
-> **Leer antes de cualquier `/opsx:propose`.** `C-01` fue implementado y archivado (`openspec/changes/archive/2026-10-03-turnos-mvp/`) y es lo que se entrega; `C-20`…`C-35` quedan `[ ]`.
+> **Leer antes de cualquier `/opsx:propose`.** `C-01` fue implementado y archivado (`openspec/changes/archive/2026-10-03-turnos-mvp/`) y `C-20` en `openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`; `C-21`…`C-35` quedan `[ ]`.
 
 > **Por qué este árbol y no el anterior.** La v1 (7 changes, camino crítico lineal `C-01→C-02→C-03→C-04`) no representaba el árbol de conocimientos: trataba `disponibilidad`, `catálogos` y `agenda` como dependencias sucesivas de la reserva guest —son paralelas— y **ocultaba la rama de persistencia**, que es dependencia dura porque la migración 003 dropeó `token_cancelacion`, `cancelled_at` y `rn05_un_activo_por_dia`. Corregido en § "Roadmap anterior". `C-02`…`C-07` quedan reservados, no reutilizables.
 
@@ -36,7 +36,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │         + 6 modelos + POST /turnos + 26 tests
  │
  ├── PERSISTENCIA — el esquema va antes que la API ────────────────────────
- │    ├── C-20 persistencia-cancelacion-rn04      [ ]
+ │    ├── C-20 persistencia-cancelacion-rn04      [x] ARCHIVADO
  │    └── C-21 persistencia-token-y-rn05          [ ]
  │           └── C-26 rn05-limite-paciente         [ ]
  │
@@ -122,7 +122,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | KB-03 rutas públicas (5) | `C-24`,`C-25`,`C-29` | PENDIENTE (`/docs` ya existe) |
 | KB-03 RBAC odontólogo (403) | `C-27` | PENDIENTE |
 | KB-05 notif best-effort | `C-28` | PENDIENTE |
-| KB-04 `idx_turno_paciente_fecha` | `C-20` | PENDIENTE |
+| KB-04 `idx_turno_paciente_fecha` | `C-20` | COMPLETADO |
 | KB-08 layout (`notifications/`,`availability.py`,`reservas.py`,`agenda.py`) | `C-28`,`C-25`,`C-29`,`C-27` | PENDIENTE |
 | KB-10 §RN05 (pregunta Alta) | `C-21` | PENDIENTE (la cierra) |
 | DD-01 / KB-01 §Fuera de alcance | `C-30`→`C-31`…`C-35` | **BLOQUEADO** |
@@ -151,7 +151,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 ## FASE 2 — Cimientos del resto (GATE 1, sin dependencias entre sí)
 
 ### [C-20] `persistencia-cancelacion-rn04`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`)
 - **Scope**: Alembic **004** `ADD COLUMN cancelled_at TIMESTAMPTZ` + `idx_turno_paciente_fecha` (el único índice de `KB-04 §Turno` que falta). `downgrade` reversible; test que verifica que `estado`, `fin` y ambos EXCLUDE siguen intactos.
 - **Dependencias**: `C-01`
 - **Governance**: BAJO — una columna y un índice; no introduce invariante

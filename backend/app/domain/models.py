@@ -95,6 +95,9 @@ class Turno(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    cancelled_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     __table_args__ = (
         CheckConstraint("fin > inicio", name="ck_turno_fin_mayor_inicio"),
@@ -118,6 +121,7 @@ class Turno(Base):
         Index("idx_turno_profesional_inicio", "profesional_id", "inicio"),
         Index("idx_turno_sillon_inicio", "sillon_id", "inicio"),
         Index("idx_turno_estado", "estado"),
+        Index("idx_turno_paciente_fecha", "paciente_id", "inicio"),
     )
 
 
