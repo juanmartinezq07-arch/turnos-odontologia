@@ -1,0 +1,9 @@
+name: c-21-persistencia-token-y-rn05
+slug: c-21-persistencia-token-y-rn05
+title: persistencia-token-y-rn05
+description: Alembic 005: token_cancelacion UNIQUE + índice único parcial rn05_un_activo_por_dia para RN05
+governance: MEDIO
+dependencies:
+  - C-01
+status: archived
+created: 2026-10-31

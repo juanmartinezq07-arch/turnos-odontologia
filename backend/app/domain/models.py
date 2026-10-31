@@ -98,6 +98,9 @@ class Turno(Base):
     cancelled_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    token_cancelacion: Mapped[str | None] = mapped_column(
+        Text, unique=True, nullable=True
+    )
 
     __table_args__ = (
         CheckConstraint("fin > inicio", name="ck_turno_fin_mayor_inicio"),

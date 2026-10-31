@@ -37,7 +37,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │
  ├── PERSISTENCIA — el esquema va antes que la API ────────────────────────
  │    ├── C-20 persistencia-cancelacion-rn04      [x] ARCHIVADO
- │    └── C-21 persistencia-token-y-rn05          [ ]
+ │    └── C-21 persistencia-token-y-rn05          [x] ARCHIVADO
  │           └── C-26 rn05-limite-paciente         [ ]
  │
  ├── API DE LECTURA — sin esquema nuevo ───────────────────────────────────
@@ -124,7 +124,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | KB-05 notif best-effort | `C-28` | PENDIENTE |
 | KB-04 `idx_turno_paciente_fecha` | `C-20` | COMPLETADO |
 | KB-08 layout (`notifications/`,`availability.py`,`reservas.py`,`agenda.py`) | `C-28`,`C-25`,`C-29`,`C-27` | PENDIENTE |
-| KB-10 §RN05 (pregunta Alta) | `C-21` | PENDIENTE (la cierra) |
+| KB-10 §RN05 (pregunta Alta) | `C-21` | COMPLETADO (cerrada por C-21) |
 | DD-01 / KB-01 §Fuera de alcance | `C-30`→`C-31`…`C-35` | **BLOQUEADO** |
 
 **Sin change, declarado:** consentimiento Ley 25.326 Art. 5.1 (`KB-10` Media: "documentado, no persistido"); notificaciones reales (DD-05: costo + verificación empresarial); pagos, ficha clínica, multi-sucursal, obras sociales (`KB-01 §Fuera de alcance`); **bloqueos de agenda, agenda semanal e historial de transiciones no existen en la KB** — si la cátedra los quiere, se agregan a la KB primero y después entran al roadmap. Ningún change está EN PROGRESO: no hay código a medio escribir.
@@ -158,7 +158,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-04 §Turno` · `KB-05 §RN04` · `KB-07 §Flujo 3` · `KB-10 §IN-02`
 
 ### [C-21] `persistencia-token-y-rn05`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`)
 - **Scope**: Alembic **005**: `token_cancelacion TEXT UNIQUE` (DDL en el `downgrade` de la 003) + índice único parcial `rn05_un_activo_por_dia (paciente_id, (inicio AT TIME ZONE 'America/Argentina/Buenos_Aires')::date) WHERE estado='activo'`. **Cierra la pregunta de prioridad Alta de `KB-10`**: RN05 como invariante declarativa, igual que RN02. Tests: 2 activos mismo paciente/día → viola el índice; otro día → commit; token repetido → unicidad.
 - **Dependencias**: `C-01`
 - **Governance**: MEDIO — invariante en persistencia: la base decide, como RN02

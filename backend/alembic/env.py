@@ -20,7 +20,7 @@ config.set_main_option(
     "sqlalchemy.url",
     os.environ.get(
         "DATABASE_URL",
-        "postgresql+psycopg://turnos:turnos@localhost:5432/turnos",
+        "postgresql+psycopg://turnos:turnos-dev@127.0.0.1:5433/turnos",
     ),
 )
 target_metadata = Base.metadata
