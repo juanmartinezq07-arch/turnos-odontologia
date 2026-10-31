@@ -35,4 +35,6 @@ def conflict_code_from_integrity_error(exc: IntegrityError) -> str:
         return "RN02_PROFESIONAL"
     if "rn02_sillon" in texto:
         return "RN02_SILLON"
+    if "rn05_un_activo_por_dia" in texto:
+        return "RN05"
     return "CONFLICTO"

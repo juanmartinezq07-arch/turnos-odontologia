@@ -23,3 +23,7 @@ def get_tz_consultorio() -> str:
 
 def get_api_key_recepcion() -> str:
     return os.environ.get("API_KEY_RECEPCION", "")
+
+
+def get_api_key_odontologo() -> str:
+    return os.environ.get("API_KEY_ODONTOLOGO", "")

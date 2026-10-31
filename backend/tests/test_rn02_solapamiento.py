@@ -52,7 +52,20 @@ def _turno(seed, inicio, fin, prof=None, sillon=None, estado="activo"):
 async def test_borde_que_se_toca_no_choca(db_session, seed):
     db_session.add(_turno(seed, _dt(10, 0), _dt(10, 30)))
     await db_session.flush()
-    db_session.add(_turno(seed, _dt(10, 30), _dt(11, 0)))
+    # Segundo paciente para no violar RN05 (índice parcial de C-21)
+    pa2 = PacienteGuest(nombre="Maria Gomez Demo", telefono="11-0000-0002")
+    db_session.add(pa2)
+    await db_session.flush()
+    turno2 = Turno(
+        profesional_id=seed["p1"].id,
+        sillon_id=seed["s1"].id,
+        prestacion_id=seed["pr"].id,
+        paciente_id=pa2.id,
+        inicio=_dt(10, 30),
+        fin=_dt(11, 0),
+        estado="activo",
+    )
+    db_session.add(turno2)
     await db_session.flush()  # no debe violar nada
 
 

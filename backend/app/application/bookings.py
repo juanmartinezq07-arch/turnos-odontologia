@@ -3,7 +3,7 @@
 La app pre-valida para dar 409 claro, pero la base decide (D-01):
 todo IntegrityError se mapea por nombre de constraint y nunca es 500.
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import and_, select
@@ -141,6 +141,32 @@ async def _precheck_rn02(
         )
 
 
+async def _precheck_rn05(
+    session: AsyncSession, paciente_id, inicio: datetime
+) -> None:
+    """RN05: maximo 1 turno activo por paciente y dia calendario."""
+    tz = ZoneInfo(get_tz_consultorio())
+    inicio_local = inicio.astimezone(tz)
+    dia = inicio_local.date()
+    inicio_dia = datetime(dia.year, dia.month, dia.day, tzinfo=tz)
+    fin_dia = inicio_dia + timedelta(days=1)
+
+    res = await session.execute(
+        select(Turno.id).where(
+            Turno.paciente_id == paciente_id,
+            Turno.estado == "activo",
+            Turno.inicio >= inicio_dia,
+            Turno.inicio < fin_dia,
+        ).limit(1)
+    )
+    if res.first() is not None:
+        raise DomainConflict(
+            "RN05",
+            "El paciente ya tiene un turno activo este dia",
+            status=409,
+        )
+
+
 async def _cargar_recursos(
     session: AsyncSession, profesional_id, sillon_id, prestacion_id
 ) -> Prestacion:
@@ -174,6 +200,7 @@ async def crear_turno(
     fin = rules.calcular_fin(inicio, prest.duracion_min)
     await _validar_temporalidad(session, profesional_id, inicio, fin)
     await _precheck_rn02(session, profesional_id, sillon_id, inicio, fin)
+    await _precheck_rn05(session, paciente.id, inicio)
     turno = Turno(
         profesional_id=profesional_id,
         sillon_id=sillon_id,

@@ -125,6 +125,13 @@ class Turno(Base):
         Index("idx_turno_sillon_inicio", "sillon_id", "inicio"),
         Index("idx_turno_estado", "estado"),
         Index("idx_turno_paciente_fecha", "paciente_id", "inicio"),
+        Index(
+            "rn05_un_activo_por_dia",
+            "paciente_id",
+            text("((inicio AT TIME ZONE 'America/Argentina/Buenos_Aires')::date)"),
+            postgresql_where=text("estado = 'activo'"),
+            unique=True,
+        ),
     )
 
 

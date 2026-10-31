@@ -1,0 +1,10 @@
+name: c-26-rn05-limite-paciente
+slug: c-26-rn05-limite-paciente
+title: rn05-limite-paciente
+description: RN05 de punta a punta: máximo 1 turno activo por paciente y día, código de error RN05
+governance: MEDIO
+dependencies:
+  - C-01
+  - C-21
+status: done
+created: 2026-10-31

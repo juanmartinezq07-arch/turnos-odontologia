@@ -38,7 +38,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  ├── PERSISTENCIA — el esquema va antes que la API ────────────────────────
  │    ├── C-20 persistencia-cancelacion-rn04      [x] ARCHIVADO
  │    └── C-21 persistencia-token-y-rn05          [x] ARCHIVADO
- │           └── C-26 rn05-limite-paciente         [ ]
+ │           └── C-26 rn05-limite-paciente         [x] ARCHIVADO
  │
  ├── API DE LECTURA — sin esquema nuevo ───────────────────────────────────
  │    ├── C-24 api-catalogos-publicos            [ ]
