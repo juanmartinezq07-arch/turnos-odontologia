@@ -4,13 +4,13 @@ import asyncio
 from tests.conftest import proximo_dia_habil
 
 
-def _payload(ids, inicio):
+def _payload(ids, inicio, telefono="11-0000-0001"):
     return {
         "profesional_id": str(ids["p1"]),
         "sillon_id": str(ids["s1"]),
         "prestacion_id": str(ids["c30"]),
         "inicio": inicio.isoformat(),
-        "paciente": {"nombre": "Juan Perez Demo", "telefono": "11-0000-0001"},
+        "paciente": {"nombre": "Juan Perez Demo", "telefono": telefono},
     }
 
 
@@ -18,12 +18,13 @@ async def test_doble_post_concurrente_un_ganador(
     client, seed_catalog, headers_recepcion
 ):
     inicio = proximo_dia_habil(10, 0)
-    cuerpo = _payload(seed_catalog, inicio)
+    cuerpo_1 = _payload(seed_catalog, inicio, telefono="11-0000-0001")
+    cuerpo_2 = _payload(seed_catalog, inicio, telefono="11-0000-0002")
 
-    async def post():
+    async def post(cuerpo):
         return await client.post("/turnos", json=cuerpo, headers=headers_recepcion)
 
-    r1, r2 = await asyncio.gather(post(), post())
+    r1, r2 = await asyncio.gather(post(cuerpo_1), post(cuerpo_2))
     assert sorted([r1.status_code, r2.status_code]) == [201, 409]
     perdedor = r1 if r1.status_code == 409 else r2
     assert perdedor.json()["code"] in ("RN02_PROFESIONAL", "RN02_SILLON")

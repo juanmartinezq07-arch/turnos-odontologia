@@ -1,7 +1,7 @@
 # CHANGES — Secuencia de Implementación
 
 > Índice canónico de todos los changes de **TurnosAR**. Cada change es atómico: un agente lo implementa en una sesión (~4-6 h).
-> **Leer antes de cualquier `/opsx:propose`.** `C-01` fue implementado y archivado (`openspec/changes/archive/2026-10-03-turnos-mvp/`) y `C-20` en `openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`; `C-21`…`C-35` quedan `[ ]`.
+> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`) y `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`) fueron implementados y archivados; el resto queda `[ ]`.
 
 > **Por qué este árbol y no el anterior.** La v1 (7 changes, camino crítico lineal `C-01→C-02→C-03→C-04`) no representaba el árbol de conocimientos: trataba `disponibilidad`, `catálogos` y `agenda` como dependencias sucesivas de la reserva guest —son paralelas— y **ocultaba la rama de persistencia**, que es dependencia dura porque la migración 003 dropeó `token_cancelacion`, `cancelled_at` y `rn05_un_activo_por_dia`. Corregido en § "Roadmap anterior". `C-02`…`C-07` quedan reservados, no reutilizables.
 
@@ -112,8 +112,8 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | RN02 doble `EXCLUDE`, borde `[)`, carrera | `C-01` | COMPLETADO |
 | RN03 pasado / horario → 422 | `C-01` | COMPLETADO |
 | **RN04** cancelación libera slot | `C-20`+`C-22` | PENDIENTE |
-| **RN05** 1 activo/paciente/día → 409 | `C-21`+`C-26` | PENDIENTE |
-| US-001 (CU01) | `C-01`+`C-26`+`C-28` | COMPLETADO **3/5 CA** |
+| **RN05** 1 activo/paciente/día → 409 | `C-21`+`C-26` | COMPLETADO |
+| US-001 (CU01) | `C-01`+`C-26`+`C-28` | COMPLETADO **4/5 CA** |
 | US-002 (CU01) | `C-25` | PENDIENTE |
 | US-003 (CU02) | `C-29` (+`C-21`,`C-24`,`C-25`,`C-26`) | PENDIENTE |
 | US-004 (CU03) | `C-22`+`C-29`+`C-28` | PENDIENTE |
@@ -142,7 +142,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 
 > **Verificado (2026-10-15):** `26 passed` en 3.38 s contra PostgreSQL 16.15 (Debian, `btree_gist 1.7`), sin SQLite ni mocks.
 >
-> **Déficit (documentado, no se replanifica `POST /turnos`):** US-001 tiene **5** criterios (`KB-06` L11–L15) y C-01 cumple **3**. Faltan **RN05** (L14) y **notificación mock** (L15) → `C-26` y `C-28`.
+> **Déficit (documentado, no se replanifica `POST /turnos`):** US-001 tiene **5** criterios (`KB-06` L11–L15): C-01 cumple **3**, **RN05** (L14) fue cubierto por `C-26` (**4/5**) y falta **notificación mock** (L15) → `C-28`.
 >
 > **Deuda con fecha:** `tests/conftest.py:8` usa `asyncio.WindowsSelectorEventLoopPolicy()`, eliminada en Python 3.16: con 3.16 la suite deja de colectar. Se corrige en `C-21`.
 
@@ -218,7 +218,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-06 §US-005` · `KB-07 §Flujo 3` · `KB-05 §RN04` · `KB-04 §Turno`
 
 ### [C-26] `rn05-limite-paciente`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`)
 - **Scope**: RN05 de punta a punta (criterio L14 de US-001): 1 turno `activo` por paciente y día calendario (identidad = teléfono normalizado, fallback email — SU-03) → **409 `code="RN05"`**. Extender `conflict_code_from_integrity_error`: hoy mapea a `"CONFLICTO"` todo constraint que no sea `rn02_*`, hay que agregarle `rn05_un_activo_por_dia`. Tests: mismo paciente mismo día → 409 `RN05`; distinto → 201; otro día → 201.
   **⚠️ Regresión en la suite**: los fixtures de `C-01` usan **un único paciente** (`11-0000-0001`) para dos turnos activos del mismo día; con el índice de `C-21` hay que **parametrizarlos con pacientes distintos** (criterio: los 26 siguen verdes). Se rompen `test_rn02_solapamiento.py::test_borde_que_se_toca_no_choca` y `test_turnos_api.py::test_borde_201` (fallan directo); `::test_choque_mismo_profesional_distinto_sillon` y `::test_choque_mismo_sillon_distinto_profesional` quedan con assert frágil (RN02 y RN05 chocan a la vez, el assert exige `rn02_profesional` exacto); `test_rn02_concurrencia.py::test_doble_post_concurrente_un_ganador` queda **flaky** (el perdedor puede caer en RN05). `test_choque_profesional_409` y `test_choque_sillon_409` **no** se rompen: el precheck `_precheck_rn02` corre antes del insert.
 - **Dependencias**: `C-01`, `C-21`

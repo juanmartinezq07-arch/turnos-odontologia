@@ -32,17 +32,20 @@ async def seed(db_session):
     s2 = Sillon(nombre="Sillon 2")
     pr = Prestacion(nombre="Consulta Demo", duracion_min=30)
     pa = PacienteGuest(nombre="Juan Perez Demo", telefono="11-0000-0001")
-    db_session.add_all([p1, p2, s1, s2, pr, pa])
+    pa2 = PacienteGuest(nombre="Maria Gomez Demo", telefono="11-0000-0002")
+    db_session.add_all([p1, p2, s1, s2, pr, pa, pa2])
     await db_session.flush()
-    return {"p1": p1, "p2": p2, "s1": s1, "s2": s2, "pr": pr, "pa": pa}
+    return {"p1": p1, "p2": p2, "s1": s1, "s2": s2, "pr": pr, "pa": pa, "pa2": pa2}
 
 
-def _turno(seed, inicio, fin, prof=None, sillon=None, estado="activo"):
+def _turno(
+    seed, inicio, fin, prof=None, sillon=None, paciente=None, estado="activo"
+):
     return Turno(
         profesional_id=(prof or seed["p1"]).id,
         sillon_id=(sillon or seed["s1"]).id,
         prestacion_id=seed["pr"].id,
-        paciente_id=seed["pa"].id,
+        paciente_id=(paciente or seed["pa"]).id,
         inicio=inicio,
         fin=fin,
         estado=estado,
@@ -53,26 +56,24 @@ async def test_borde_que_se_toca_no_choca(db_session, seed):
     db_session.add(_turno(seed, _dt(10, 0), _dt(10, 30)))
     await db_session.flush()
     # Segundo paciente para no violar RN05 (índice parcial de C-21)
-    pa2 = PacienteGuest(nombre="Maria Gomez Demo", telefono="11-0000-0002")
-    db_session.add(pa2)
-    await db_session.flush()
-    turno2 = Turno(
-        profesional_id=seed["p1"].id,
-        sillon_id=seed["s1"].id,
-        prestacion_id=seed["pr"].id,
-        paciente_id=pa2.id,
-        inicio=_dt(10, 30),
-        fin=_dt(11, 0),
-        estado="activo",
+    db_session.add(
+        _turno(seed, _dt(10, 30), _dt(11, 0), paciente=seed["pa2"])
     )
-    db_session.add(turno2)
     await db_session.flush()  # no debe violar nada
 
 
 async def test_choque_mismo_profesional_distinto_sillon(db_session, seed):
     db_session.add(_turno(seed, _dt(10, 0), _dt(10, 30)))
     await db_session.flush()
-    db_session.add(_turno(seed, _dt(10, 15), _dt(10, 45), sillon=seed["s2"]))
+    db_session.add(
+        _turno(
+            seed,
+            _dt(10, 15),
+            _dt(10, 45),
+            sillon=seed["s2"],
+            paciente=seed["pa2"],
+        )
+    )
     with pytest.raises(IntegrityError) as exc:
         await db_session.flush()
     assert exc.value.orig.diag.constraint_name == "rn02_profesional"
@@ -82,7 +83,15 @@ async def test_choque_mismo_profesional_distinto_sillon(db_session, seed):
 async def test_choque_mismo_sillon_distinto_profesional(db_session, seed):
     db_session.add(_turno(seed, _dt(10, 0), _dt(10, 30)))
     await db_session.flush()
-    db_session.add(_turno(seed, _dt(10, 15), _dt(10, 45), prof=seed["p2"]))
+    db_session.add(
+        _turno(
+            seed,
+            _dt(10, 15),
+            _dt(10, 45),
+            prof=seed["p2"],
+            paciente=seed["pa2"],
+        )
+    )
     with pytest.raises(IntegrityError) as exc:
         await db_session.flush()
     assert exc.value.orig.diag.constraint_name == "rn02_sillon"
