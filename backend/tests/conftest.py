@@ -14,6 +14,7 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 os.environ["API_KEY_RECEPCION"] = "test-recepcion-key"
+os.environ["API_KEY_ODONTOLOGO"] = "test-odontologo-key"
 os.environ["DATABASE_URL"] = "postgresql+psycopg://turnos:turnos-dev@127.0.0.1:5433/turnos"
 os.environ["TZ_CONSULTORIO"] = "America/Argentina/Buenos_Aires"
 

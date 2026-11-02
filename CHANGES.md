@@ -1,7 +1,7 @@
 # CHANGES — Secuencia de Implementación
 
 > Índice canónico de todos los changes de **TurnosAR**. Cada change es atómico: un agente lo implementa en una sesión (~4-6 h).
-> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`), `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`), `C-24` (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`) y `C-25` (`openspec/changes/archive/2026-11-02-c-25-disponibilidad-real/`) fueron implementados y archivados; el resto queda `[ ]`.
+> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`), `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`), `C-24` (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`), `C-25` (`openspec/changes/archive/2026-11-02-c-25-disponibilidad-real/`) y `C-27` (`openspec/changes/archive/2026-11-02-c-27-api-agenda-odontologo/`) fueron implementados y archivados; el resto queda `[ ]`.
 
 > **Por qué este árbol y no el anterior.** La v1 (7 changes, camino crítico lineal `C-01→C-02→C-03→C-04`) no representaba el árbol de conocimientos: trataba `disponibilidad`, `catálogos` y `agenda` como dependencias sucesivas de la reserva guest —son paralelas— y **ocultaba la rama de persistencia**, que es dependencia dura porque la migración 003 dropeó `token_cancelacion`, `cancelled_at` y `rn05_un_activo_por_dia`. Corregido en § "Roadmap anterior". `C-02`…`C-07` quedan reservados, no reutilizables.
 
@@ -43,7 +43,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  ├── API DE LECTURA — sin esquema nuevo ───────────────────────────────────
  │    ├── C-24 api-catalogos-publicos            [x] ARCHIVADO
  │    ├── C-25 disponibilidad-real               [x] ARCHIVADO
- │    └── C-27 api-agenda-odontologo             [ ]
+ │    └── C-27 api-agenda-odontologo             [x] ARCHIVADO
  │
  ├── TRANSVERSAL ─────────────────────────────────────────────────────────
  │    └── C-28 notificaciones-mock               [ ]
@@ -118,9 +118,9 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | US-003 (CU02) | `C-29` (+`C-21`,`C-24`,`C-25`,`C-26`) | PENDIENTE |
 | US-004 (CU03) | `C-22`+`C-29`+`C-28` | PENDIENTE |
 | US-005 (CU03) | `C-23` | PENDIENTE |
-| US-006 (CU04) | `C-27` | PENDIENTE |
+| US-006 (CU04) | `C-27` | COMPLETADO |
 | KB-03 rutas públicas (5) | `C-24`,`C-25`,`C-29` | PENDIENTE (`/docs` ya existe) |
-| KB-03 RBAC odontólogo (403) | `C-27` | PENDIENTE |
+| KB-03 RBAC odontólogo (403) | `C-27` | COMPLETADO |
 | KB-05 notif best-effort | `C-28` | PENDIENTE |
 | KB-04 `idx_turno_paciente_fecha` | `C-20` | COMPLETADO |
 | KB-08 layout (`notifications/`,`availability.py`,`reservas.py`,`agenda.py`) | `C-28`,`C-25`,`C-29`,`C-27` | PENDIENTE |
@@ -179,7 +179,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-06 §US-002` · `KB-07 §Flujo 1` · `KB-05 §Temporalidad` · `KB-04 §HorarioAtencion`
 
 ### [C-27] `api-agenda-odontologo`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-02-c-27-api-agenda-odontologo/`)
 - **Scope**: `GET /agenda?profesional_id=&fecha=` con activos ordenados por `inicio`, con prestación (y duración RN01), sillón y paciente. `require_odontologo` con `API_KEY_ODONTOLOGO` (hoy solo hay `require_recepcion`); agenda ajena → **403**. `?incluir_cancelados=true` como filtro explícito. Tests: orden, 403, fecha inválida → 422, sin credencial → 401.
 - **Dependencias**: `C-01`
 - **Governance**: BAJO — endpoint de lectura; agrega el rol odontólogo sin reglas nuevas

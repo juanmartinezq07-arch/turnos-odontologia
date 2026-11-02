@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.api.v1 import catalogos, disponibilidad, turnos
+from app.api.v1 import agenda, catalogos, disponibilidad, turnos
 from app.core.errors import DomainConflict, NotFound
 
 
@@ -28,6 +28,8 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(HTTPException)
     async def _http(_: Request, exc: HTTPException):
+        if isinstance(exc.detail, dict) and "code" in exc.detail and "message" in exc.detail:
+            return _error(str(exc.detail["code"]), str(exc.detail["message"]), exc.status_code)
         code = {401: "NO_AUTORIZADO", 403: "PROHIBIDO", 404: "NO_ENCONTRADO"}.get(
             exc.status_code, "ERROR_HTTP"
         )
@@ -35,6 +37,7 @@ def create_app() -> FastAPI:
 
     app.include_router(catalogos.router)
     app.include_router(disponibilidad.router)
+    app.include_router(agenda.router)
     app.include_router(turnos.router, tags=["turnos"])
     return app
 
