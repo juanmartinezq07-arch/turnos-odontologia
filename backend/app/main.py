@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.api.v1 import catalogos, turnos
+from app.api.v1 import catalogos, disponibilidad, turnos
 from app.core.errors import DomainConflict, NotFound
 
 
@@ -34,6 +34,7 @@ def create_app() -> FastAPI:
         return _error(code, str(exc.detail), exc.status_code)
 
     app.include_router(catalogos.router)
+    app.include_router(disponibilidad.router)
     app.include_router(turnos.router, tags=["turnos"])
     return app
 
