@@ -1,7 +1,7 @@
 # CHANGES — Secuencia de Implementación
 
 > Índice canónico de todos los changes de **TurnosAR**. Cada change es atómico: un agente lo implementa en una sesión (~4-6 h).
-> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`) y `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`) fueron implementados y archivados; el resto queda `[ ]`.
+> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`), `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`) y `C-24` (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`) fueron implementados y archivados; el resto queda `[ ]`.
 
 > **Por qué este árbol y no el anterior.** La v1 (7 changes, camino crítico lineal `C-01→C-02→C-03→C-04`) no representaba el árbol de conocimientos: trataba `disponibilidad`, `catálogos` y `agenda` como dependencias sucesivas de la reserva guest —son paralelas— y **ocultaba la rama de persistencia**, que es dependencia dura porque la migración 003 dropeó `token_cancelacion`, `cancelled_at` y `rn05_un_activo_por_dia`. Corregido en § "Roadmap anterior". `C-02`…`C-07` quedan reservados, no reutilizables.
 
@@ -41,7 +41,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │           └── C-26 rn05-limite-paciente         [x] ARCHIVADO
  │
  ├── API DE LECTURA — sin esquema nuevo ───────────────────────────────────
- │    ├── C-24 api-catalogos-publicos            [ ]
+ │    ├── C-24 api-catalogos-publicos            [x] ARCHIVADO
  │    ├── C-25 disponibilidad-real               [ ]
  │    └── C-27 api-agenda-odontologo             [ ]
  │
@@ -165,7 +165,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-04 §Turno` · `KB-05 §RN05 + §Excepciones` · `KB-09 §DD-06 + §SU-03` · `KB-10 §RN05`
 
 ### [C-24] `api-catalogos-publicos`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`)
 - **Scope**: `GET /profesionales`, `/sillones`, `/prestaciones` — solo activos, con `duracion_min` visible (RN01). **Públicos** (3 de las 5 rutas de `KB-03`). Tests: 200 sin credencial, solo activos, presentes en `/openapi.json`.
 - **Dependencias**: `C-01`
 - **Governance**: BAJO — tres endpoints de lectura sobre entidades ya persistidas
