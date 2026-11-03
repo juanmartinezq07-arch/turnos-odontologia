@@ -1,4 +1,4 @@
-"""Configuracion solo por variables de entorno (alcance C-01)."""
+"""Configuracion solo por variables de entorno (alcance C-01, C-28)."""
 import os
 from pathlib import Path
 
@@ -11,6 +11,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 DEFAULT_DATABASE_URL = "postgresql+psycopg://turnos:turnos@localhost:5432/turnos"
 DEFAULT_TZ = "America/Argentina/Buenos_Aires"
+DEFAULT_NOTIF_BACKEND = "mock"
 
 
 def get_database_url() -> str:
@@ -27,3 +28,7 @@ def get_api_key_recepcion() -> str:
 
 def get_api_key_odontologo() -> str:
     return os.environ.get("API_KEY_ODONTOLOGO", "")
+
+
+def get_notif_backend() -> str:
+    return os.environ.get("NOTIF_BACKEND", DEFAULT_NOTIF_BACKEND)

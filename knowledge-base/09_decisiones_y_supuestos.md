@@ -51,6 +51,14 @@
 **Justificación**: la deuda aceptada (auth mínima, sin panel, rate-limit en memoria) es barata de pagar después; la invariante bien puesta es lo caro de arreglar tarde.
 **Trade-offs aceptados**: se acepta deuda deliberada documentada en 10_preguntas_abiertas.
 
+
+### DD-08 — Alcance de Interfaz y Derogación Condicionada de DD-01
+**Decisión**: Derogar la exclusión estricta de DD-01 para habilitar el desarrollo modular de la interfaz web (Fase 4, C-31 a C-35), manteniendo el backend como sistema autónomo desacoplado.
+**Contexto**: El núcleo evaluado del MVP y las garantías de concurrencia (RN02/RN05) quedaron consolidados en el backend. La adición de interfaces React + Vite facilita la operatividad de la agenda y reserva pública sin alterar los contratos REST establecidos.
+**Alternativas consideradas**: (a) Mantener DD-01 de forma indefinida y operar solo vía OpenAPI/Swagger; (b) Reemplazar la API con una aplicación monolítica server-side.
+**Justificación**: La separación desacoplada permite construir interfaces SPA estáticas independientes. Para preservar la seguridad, el frontend de demo no incluye API keys maestras embebidas en el bundle (VITE_*), sino que las credenciales protegidas se suministran en tiempo de ejecución o mediante proxy de sesión.
+**Trade-offs aceptados**: Requiere mantener sincronizados los esquemas OpenAPI y los tipos TypeScript del cliente.
+
 ## Supuestos inferidos
 
 ### SU-01 — Un turno ocupa un solo sillón y un solo profesional

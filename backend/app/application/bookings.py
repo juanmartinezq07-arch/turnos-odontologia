@@ -17,6 +17,8 @@ from app.core.errors import (
     conflict_code_from_integrity_error,
 )
 from app.domain import rules
+import logging
+from app.notifications import get_notification_service
 from app.domain.models import (
     HorarioAtencion,
     PacienteGuest,
@@ -218,4 +220,8 @@ async def crear_turno(
         code = conflict_code_from_integrity_error(exc)
         raise DomainConflict(code, "Conflicto de agenda al persistir el turno")
     await session.commit()
+    try:
+        get_notification_service().notify_turn_created(turno.id)
+    except Exception as exc:
+        logging.getLogger(__name__).warning('Fallo notificacion best-effort: %s', exc)
     return turno

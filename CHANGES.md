@@ -193,7 +193,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-09 §DD-05` · `KB-05 §Excepciones` · `KB-08 §Patrones` · `KB-02 §Integraciones`
 
 ### [C-30] `decision-frontend-alcance`
-- **Estado**: `[ ]` pendiente — **bloquea `C-31`…`C-35`**
+- **Estado**: [x] archivado (openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/) — **desbloquea C-31…C-35**
 - **Scope**: resolver por escrito si DD-01 se mantiene o se deroga. **No escribe código de UI**: salida documental en `KB-09 §DD-08` y `KB-01 §Fuera de alcance`. Preguntas: ¿se deroga DD-01?, ¿cómo obtiene credencial el navegador sin exponer la API key (`KB-08 §Seguridad`)?, ¿qué costo/plazo?
 - **Dependencias**: `C-01`
 - **Governance**: MEDIO — toca una decisión de alcance cerrada
