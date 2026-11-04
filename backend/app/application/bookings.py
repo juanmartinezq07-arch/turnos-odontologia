@@ -1,10 +1,12 @@
-"""Orquestacion del alta: RN01/RN03 + prechecks RN02 (D-02).
+"""Orquestacion del alta y reprogramacion: RN01/RN03 + prechecks RN02 (D-02).
 
 La app pre-valida para dar 409 claro, pero la base decide (D-01):
 todo IntegrityError se mapea por nombre de constraint y nunca es 500.
 """
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+import logging
+import uuid
 
 from sqlalchemy import and_, select
 from sqlalchemy.exc import IntegrityError
@@ -17,8 +19,6 @@ from app.core.errors import (
     conflict_code_from_integrity_error,
 )
 from app.domain import rules
-import logging
-from app.notifications import get_notification_service
 from app.domain.models import (
     HorarioAtencion,
     PacienteGuest,
@@ -27,6 +27,7 @@ from app.domain.models import (
     Sillon,
     Turno,
 )
+from app.notifications import get_notification_service
 
 
 def _ahora() -> datetime:
@@ -49,28 +50,37 @@ def _normalizar_telefono(telefono: str | None) -> str | None:
 def _normalizar_email(email: str | None) -> str | None:
     if not email:
         return None
-    limpio = email.strip().lower()
-    return limpio or None
+    return email.strip().lower() or None
 
 
 async def get_or_create_paciente(
-    session: AsyncSession, nombre: str, telefono: str | None, email: str | None
+    session: AsyncSession,
+    nombre: str,
+    telefono: str | None,
+    email: str | None,
 ) -> PacienteGuest:
-    tel = _normalizar_telefono(telefono)
-    mail = _normalizar_email(email)
-    stmt = select(PacienteGuest)
-    if tel and mail:
-        stmt = stmt.where(
-            (PacienteGuest.telefono == tel) | (PacienteGuest.email == mail)
+    nombre_limpio = " ".join(nombre.split())
+    tel_norm = _normalizar_telefono(telefono)
+    mail_norm = _normalizar_email(email)
+
+    criterios = []
+    if tel_norm:
+        criterios.append(PacienteGuest.telefono == tel_norm)
+    if mail_norm:
+        criterios.append(PacienteGuest.email == mail_norm)
+
+    if criterios:
+        condicion = criterios[0] if len(criterios) == 1 else (criterios[0] | criterios[1])
+        res = await session.execute(
+            select(PacienteGuest).where(condicion).limit(1)
         )
-    elif tel:
-        stmt = stmt.where(PacienteGuest.telefono == tel)
-    else:
-        stmt = stmt.where(PacienteGuest.email == mail)
-    existente = (await session.execute(stmt)).scalars().first()
-    if existente is not None:
-        return existente
-    paciente = PacienteGuest(nombre=nombre, telefono=tel, email=mail)
+        existente = res.scalar_one_or_none()
+        if existente is not None:
+            return existente
+
+    paciente = PacienteGuest(
+        nombre=nombre_limpio, telefono=tel_norm, email=mail_norm
+    )
     session.add(paciente)
     await session.flush()
     return paciente
@@ -225,3 +235,92 @@ async def crear_turno(
     except Exception as exc:
         logging.getLogger(__name__).warning('Fallo notificacion best-effort: %s', exc)
     return turno
+
+
+async def cancelar_turno(session: AsyncSession, turno_id) -> Turno:
+    """RN04: cancela un turno activo registrando cancelled_at e idempotente si ya estaba cancelado."""
+    turno = await session.get(Turno, turno_id)
+    if turno is None:
+        raise NotFound("NO_ENCONTRADO", "Turno inexistente")
+    if turno.estado == "cancelado":
+        return turno
+    turno.estado = "cancelado"
+    turno.cancelled_at = _ahora()
+    await session.commit()
+    await session.refresh(turno)
+    try:
+        get_notification_service().notify_turn_updated(turno.id)
+    except Exception as exc:
+        logging.getLogger(__name__).warning("Fallo notificacion best-effort: %s", exc)
+    return turno
+
+
+async def reprogramar_turno(
+    session: AsyncSession,
+    turno_id: uuid.UUID,
+    nuevo_inicio: datetime,
+    nuevo_sillon_id: uuid.UUID | None = None,
+) -> tuple[Turno, Turno]:
+    """C-23: Reprogramación atómica de turno en una única transacción.
+
+    Cancela el turno original y crea el nuevo turno para el mismo paciente,
+    profesional y prestación (o sillón alternativo si se especificó).
+    Si ocurre cualquier conflicto (RN02, RN03, RN05), se realiza rollback total.
+    """
+    turno_orig = await session.get(Turno, turno_id)
+    if turno_orig is None:
+        raise NotFound("NO_ENCONTRADO", "Turno inexistente")
+    if turno_orig.estado == "cancelado":
+        raise DomainConflict("TURNO_NO_ACTIVO", "El turno origen ya se encuentra cancelado")
+
+    sillon_destino = nuevo_sillon_id or turno_orig.sillon_id
+    nuevo_inicio = _asegurar_aware(nuevo_inicio)
+
+    prest = await _cargar_recursos(
+        session, turno_orig.profesional_id, sillon_destino, turno_orig.prestacion_id
+    )
+    fin_nuevo = rules.calcular_fin(nuevo_inicio, prest.duracion_min)
+
+    # Validaciones temporales y disponibilidad destino
+    await _validar_temporalidad(session, turno_orig.profesional_id, nuevo_inicio, fin_nuevo)
+    await _precheck_rn02(session, turno_orig.profesional_id, sillon_destino, nuevo_inicio, fin_nuevo)
+
+    # Cancelar original en memoria/sesión
+    turno_orig.estado = "cancelado"
+    turno_orig.cancelled_at = _ahora()
+
+    # Precheck RN-05 posterior a cancelación de turno original
+    await _precheck_rn05(session, turno_orig.paciente_id, nuevo_inicio)
+
+    # Crear nuevo turno
+    nuevo_turno = Turno(
+        profesional_id=turno_orig.profesional_id,
+        sillon_id=sillon_destino,
+        prestacion_id=turno_orig.prestacion_id,
+        paciente_id=turno_orig.paciente_id,
+        inicio=nuevo_inicio,
+        fin=fin_nuevo,
+        estado="activo",
+    )
+    session.add(nuevo_turno)
+
+    try:
+        await session.flush()
+    except IntegrityError as exc:
+        await session.rollback()
+        code = conflict_code_from_integrity_error(exc)
+        raise DomainConflict(code, "Conflicto de agenda al reprogramar el turno")
+
+    await session.commit()
+    await session.refresh(turno_orig)
+    await session.refresh(nuevo_turno)
+
+    # Notificaciones best-effort
+    try:
+        service = get_notification_service()
+        service.notify_turn_updated(turno_orig.id)
+        service.notify_turn_created(nuevo_turno.id)
+    except Exception as exc:
+        logging.getLogger(__name__).warning("Fallo notificacion best-effort en reprogramacion: %s", exc)
+
+    return turno_orig, nuevo_turno

@@ -1,7 +1,7 @@
 # CHANGES — Secuencia de Implementación
 
 > Índice canónico de todos los changes de **TurnosAR**. Cada change es atómico: un agente lo implementa en una sesión (~4-6 h).
-> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`), `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`), `C-24` (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`), `C-25` (`openspec/changes/archive/2026-11-02-c-25-disponibilidad-real/`), `C-27` (`openspec/changes/archive/2026-11-02-c-27-api-agenda-odontologo/`), `C-28` (`openspec/changes/archive/2026-11-02-c-28-notificaciones-mock/`) y `C-30` (`openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/`) fueron implementados y archivados; el resto queda `[ ]`.
+> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`), `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`), `C-24` (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`), `C-25` (`openspec/changes/archive/2026-11-02-c-25-disponibilidad-real/`), `C-27` (`openspec/changes/archive/2026-11-02-c-27-api-agenda-odontologo/`), `C-28` (`openspec/changes/archive/2026-11-02-c-28-notificaciones-mock/`), `C-30` (`openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/`) y `C-22` (`openspec/changes/archive/2026-11-04-c-22-api-cancelacion-recepcionista/`) fueron implementados y archivados; el resto queda `[ ]`.
 
 > **Por qué este árbol y no el anterior.** La v1 (7 changes, camino crítico lineal `C-01→C-02→C-03→C-04`) no representaba el árbol de conocimientos: trataba `disponibilidad`, `catálogos` y `agenda` como dependencias sucesivas de la reserva guest —son paralelas— y **ocultaba la rama de persistencia**, que es dependencia dura porque la migración 003 dropeó `token_cancelacion`, `cancelled_at` y `rn05_un_activo_por_dia`. Corregido en § "Roadmap anterior". `C-02`…`C-07` quedan reservados, no reutilizables.
 
@@ -37,6 +37,8 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │
  ├── PERSISTENCIA — el esquema va antes que la API ────────────────────────
  │    ├── C-20 persistencia-cancelacion-rn04      [x] ARCHIVADO
+ │    │      └── C-22 api-cancelacion-recepcionista [x] ARCHIVADO
+ │    │             └── C-23 api-reprogramacion-atómica [x] ARCHIVADO
  │    └── C-21 persistencia-token-y-rn05          [x] ARCHIVADO
  │           └── C-26 rn05-limite-paciente         [x] ARCHIVADO
  │
@@ -50,7 +52,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │
  ├── CONFLUENCIAS ────────────────────────────────────────────────────────
  │    C-21 + C-24 + C-25 + C-26
- │    └── C-29 reservas-guest                    [ ]
+ │    └── C-29 reservas-guest                    [x] ARCHIVADO
  │
  │    C-01 + C-26 + C-28
  │    └── ▸ HITO us-001-completa (5/5 criterios) — no es un change
@@ -111,7 +113,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | RN01 `fin` en servidor | `C-01` | COMPLETADO |
 | RN02 doble `EXCLUDE`, borde `[)`, carrera | `C-01` | COMPLETADO |
 | RN03 pasado / horario → 422 | `C-01` | COMPLETADO |
-| **RN04** cancelación libera slot | `C-20`+`C-22` | PENDIENTE |
+| **RN04** cancelación libera slot | `C-20`+`C-22` | COMPLETADO |
 | **RN05** 1 activo/paciente/día → 409 | `C-21`+`C-26` | COMPLETADO |
 | US-001 (CU01) | `C-01`+`C-26`+`C-28` | COMPLETADO **5/5 CA** |
 | US-002 (CU01) | `C-25` | COMPLETADO |
@@ -204,7 +206,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 ## FASE 3 — Agenda operable (GATE 2–4)
 
 ### [C-22] `api-cancelacion-recepcionista`
-- **Estado**: `[ ]` pendiente (preparado en `openspec/changes/c-22-api-cancelacion-recepcionista/`)
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-04-c-22-api-cancelacion-recepcionista/`)
 - **Scope**: `POST /turnos/{id}/cancelacion` (API key) → `estado='cancelado'` + `cancelled_at=now()`; el `WHERE (estado='activo')` de los EXCLUDE deja de contar el rango → **el slot se libera**. **Idempotente**: no cambia `cancelled_at`. Tests: cancela, idempotencia, 401 sin credencial, 404 `NO_ENCONTRADO` si el id no existe.
 - **Dependencias**: `C-01`, `C-20`
 - **Governance**: MEDIO — escritura que libera un slot + idempotencia
@@ -226,7 +228,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-05 §RN05 + §Excepciones` · `KB-06 §US-001` (L14) · `KB-09 §SU-03` · `KB-10 §RN05`
 
 ### [C-29] `reservas-guest`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-04-c-29-reservas-guest/`)
 - **Scope**: `POST /reservas` público (sin API key) con datos mínimos + `profesional_id`, `prestacion_id`, `inicio` y `sillon_id` **opcional con auto-asignación al primero libre dentro de la transacción**. Mismas validaciones que US-001 (RN01–RN05). Devuelve **201 + `token_cancelacion`**; `POST /reservas/{token}/cancelacion` para que el guest cancele solo lo suyo (sin token no toca turnos ajenos). Rate-limit en memoria `10/min` (`RESERVA_RATE_LIMIT`), deuda documentada. Campo clínico → 422, nada persistido. Tests: e2e `disponibilidad → reserva → cancelación con token → slot liberado` + **2 `POST` concurrentes al mismo slot → 201 y 409**.
 - **Dependencias**: `C-01`, `C-21`, `C-24`, `C-25`, `C-26`
 - **Governance**: **ALTO** — endpoint público sin auth + datos personales + carrera real; es el riesgo R3 de Discovery. **Frenar y esperar revisión**

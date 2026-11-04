@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.api.v1 import agenda, catalogos, disponibilidad, turnos
+from app.api.v1 import agenda, catalogos, disponibilidad, reservas, turnos
 from app.core.errors import DomainConflict, NotFound
 
 
@@ -39,6 +39,7 @@ def create_app() -> FastAPI:
     app.include_router(disponibilidad.router)
     app.include_router(agenda.router)
     app.include_router(turnos.router, tags=["turnos"])
+    app.include_router(reservas.router, tags=["reservas"])
     return app
 
 

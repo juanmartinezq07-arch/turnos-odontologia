@@ -38,6 +38,17 @@ class TurnoOut(BaseModel):
     inicio: datetime
     fin: datetime
     estado: str
+    cancelled_at: datetime | None = None
+
+
+class TurnoReprogramar(_Estricto):
+    inicio: datetime
+    sillon_id: uuid.UUID | None = None
+
+
+class ReprogramacionOut(BaseModel):
+    original: TurnoOut
+    nuevo: TurnoOut
 
 
 class ErrorOut(BaseModel):
