@@ -36,6 +36,7 @@ Scope: proyecto **turnos-odontologia (TurnosAR)** — API FastAPI + PostgreSQL 1
 | "openspec update change" or "opsx update" | openspec-update-change | `.agents/skills/openspec-update-change/SKILL.md` |
 | "openspec sync" or "opsx sync" | openspec-sync-specs | `.agents/skills/openspec-sync-specs/SKILL.md` |
 | "openspec archive" or "opsx archive" | openspec-archive-change | `.agents/skills/openspec-archive-change/SKILL.md` |
+| auditar/revisar/verificar C-22, C-23 o C-29 (cancelacion, reprogramacion atomica, reservas guest) | auditor-changes-22-23-29 | `.agents/skills/auditor-changes-22-23-29/SKILL.md` |
 
 ## Compact Rules
 
@@ -122,6 +123,14 @@ Pre-digested rules per skill. Delegators copy matching blocks into sub-agent pro
 ### openspec-archive-change — matchea C-01: cierre del change
 - Solo cuando C-01 esta implementado y verificado (suite verde + demo guest booking + concurrencia 201/409).
 - Archiva con `openspec archive`, marca `[x]` en `CHANGES.md`, y deja el repo listo para video/reflexion de catedra.
+
+### auditor-changes-22-23-29 — matchea Fase 3: C-22 (cancelacion), C-23 (reprogramacion atomica), C-29 (reservas guest)
+- **Propósito**: Auditar artefactos OpenSpec (`proposal.md`, `specs/*/spec.md`, `design.md`, `tasks.md`) e implementaciones de los changes de Fase 3 contra `RN01–RN05`, la matriz de 3 escenarios verificables y la Ley 25.326.
+- **Situaciones de uso**: Invocar obligatoriamente al cerrar `/opsx:propose` y durante `/opsx:verify` de `C-22`, `C-23` y `C-29`.
+- **Reglas compactas**:
+  1. Verificar presencia de mínimo 3 escenarios en `spec.md` y su test correspondiente en `tasks.md`: (a) funcionamiento esperado + liberación de slot (`WHERE estado='activo'`), (b) error de negocio con `{code, message}`, y (c) caso de borde (`C-22`: idempotencia conservando `cancelled_at` original; `C-23`: rollback total si el nuevo turno falla RN02/RN03/RN05; `C-29`: colisión concurrente 201+409 y `RESERVA_RATE_LIMIT`).
+  2. Verificar notificación *best-effort* (`notify_turn_updated` / `notify_turn_created`) post-commit y cumplimiento de Ley 25.326 (`extra="forbid"` y datos sintéticos).
+  3. Emitir siempre la tabla de dictamen (`PASS` / `FAIL`) documentando hallazgos y correcciones.
 
 ## Project Conventions
 

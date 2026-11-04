@@ -149,6 +149,35 @@ openspec/             # specs vigentes (turnos, plataforma-mvp) + change archiva
 ## Documentos del trabajo
 
 - `docs/discovery/informe-discovery.md` (y `.pdf`): investigación de mercado.
-- `CHANGES.md`: roadmap (un único change C-01, archivado).
+- `CHANGES.md`: roadmap canónico del proyecto (árbol de dependencias C-01 a C-35).
 - `docs/reflexion.md`: reflexión escrita del trabajo.
-- `AGENTS.md` / `CLAUDE.md`: reglas del agente.
+- `AGENTS.md` / `CLAUDE.md`: reglas del agente e integraciones.
+- `mcp-skill/` y `docs/skills-mcp/`: ficha de investigación (`investigacion.md`), informe de aplicación (`aplicacion.md`), evidencias y configuración de la integración de Skill propia (`auditor-changes-22-23-29`) + Servidor MCP (`Context7`).
+
+## Integración de Servidor MCP (`Context7`) y Skill Propia (`auditor-changes-22-23-29`)
+
+### 1. Skill propia del proyecto: `auditor-changes-22-23-29`
+- **Ubicación**: `.agents/skills/auditor-changes-22-23-29/SKILL.md` (con copia en `mcp-skill/auditor-changes-22-23-29/SKILL.md`) y registrada en `.atl/skill-registry.md` y `AGENTS.md`.
+- **Propósito**: Auditar los artefactos SDD (`proposal.md`, `specs/*/spec.md`, `design.md`, `tasks.md`) e implementación de los changes de Fase 3 (`C-22`, `C-23`, `C-29`) contra las reglas `RN01–RN05`, los 3 escenarios verificables obligatorios y la Ley 25.326.
+
+### 2. Servidor MCP conectado: `Context7 MCP` (`@upstash/context7-mcp`)
+- **Requisitos**: Node.js 18+ (`npx` disponible en `PATH`). No requiere claves ni variables de entorno obligatorias (opera sin secretos en modo público de solo lectura sobre documentación oficial).
+- **Configuración reproducible (sin secretos)**:
+  Archivo de ejemplo incluido en [`mcp-skill/config-mcp-ejemplo.json`](mcp-skill/config-mcp-ejemplo.json). En Antigravity, los esquemas de las herramientas (`resolve-library-id` y `query-docs`) se cargan desde `~/.gemini/antigravity-cli/mcp/context7/`:
+  ```json
+  {
+    "mcpServers": {
+      "context7": {
+        "command": "npx",
+        "args": ["-y", "@upstash/context7-mcp"],
+        "env": {}
+      }
+    }
+  }
+  ```
+- **Comprobación de conexión y ejecución de herramientas**:
+  1. Invocar `resolve-library-id` con `libraryName: "SQLAlchemy"` para obtener el ID canónico (`/websites/sqlalchemy_en_20_orm`).
+  2. Invocar `query-docs` con `libraryId: "/websites/sqlalchemy_en_20_orm"` para consultar el manejo transaccional de `AsyncSession` (`expire_on_commit=False`, `commit`, `rollback`).
+  3. El registro completo de solicitud y respuesta real se encuentra en [`mcp-skill/evidencias/ejecucion-mcp-context7.md`](mcp-skill/evidencias/ejecucion-mcp-context7.md).
+- **Resolución de problemas comunes de instalación/uso**:
+  - Si las herramientas `resolve-library-id` o `query-docs` aparecen como *lazy-loaded* en Antigravity, leer primero su archivo `.json` de esquema en `~/.gemini/antigravity-cli/mcp/context7/` antes de invocar `call_mcp_tool`.

@@ -48,18 +48,39 @@ La fuente de verdad del dominio vive en `knowledge-base/`. **Leé el archivo rel
 
 ## Skills Disponibles
 
-Fuente de verdad: `.atl/skill-registry.md` (22 skills versionadas en `.agents/skills/`: 7 de dominio + 9 de workflow/fundación + 6 openspec).
+Fuente de verdad: `.atl/skill-registry.md` (23 skills versionadas en `.agents/skills/`: 8 de dominio/auditoría + 9 de workflow/fundación + 6 openspec).
 
 | Agente | Rol | Skills que carga |
 |--------|-----|------------------|
 | **Backend Core** | FastAPI / SQLModel / routers / schemas / andamiaje | `fastapi`, `fastapi-templates` |
 | **Backend Concurrencia/DB** | Async, RN02 EXCLUDE, migraciones, disponibilidad | `async-python-patterns`, `supabase-postgres-best-practices` |
 | **Calidad / Infra local** | TDD, pytest+httpx, Compose Postgres local | `tdd`, `python-testing-patterns`, `docker-patterns` (⚠️ ver precaución High Risk en Reglas Duras) |
+| **Auditoría Dominio Fase 3** | Auditoría de escenarios y reglas en `C-22`, `C-23` y `C-29` | `auditor-changes-22-23-29` |
 | **Orquestación** | SDD / OPSX / docs | `openspec-propose`, `openspec-explore`, `openspec-apply-change`, `openspec-update-change`, `openspec-sync-specs`, `openspec-archive-change` |
 
 Cargá la skill correspondiente al contexto ANTES de escribir código.
 
 > Los compact rules de cada skill los resuelve el orquestador desde `.atl/skill-registry.md`. Las skills viven en `.agents/skills/` dentro del repo (autocontenido). Esta tabla solo mapea skill→rol.
+
+### Cuándo y cómo usar la skill propia `auditor-changes-22-23-29`
+- **Cuándo usarla**: Obligatoriamente al finalizar la preparación (`/opsx:propose`) y durante la verificación (`/opsx:verify`) de los changes de Fase 3 (`C-22 api-cancelacion-recepcionista`, `C-23 api-reprogramacion-atómica` y `C-29 reservas-guest`).
+- **Qué entradas necesita**: La sección del change en `CHANGES.md`, las reglas de negocio en `knowledge-base/04_modelo_de_datos.md` y `05_reglas_de_negocio.md`, y los artefactos del change en `openspec/changes/<change-name>/` (`proposal.md`, `specs/*/spec.md`, `design.md`, `tasks.md`).
+- **Cómo revisar el resultado**: Comprobar que emita la tabla de dictamen con los 6 criterios en `PASS` (presencia de los 3 escenarios verificables: funcionamiento esperado + liberación de slot, error de negocio `{code, message}`, y caso de borde de idempotencia/rollback atómico/concurrencia; trazabilidad en `tasks.md`; notificación *best-effort* `C-28`; y cumplimiento de Ley 25.326).
+
+---
+
+## Integraciones Externas (Servidores MCP)
+
+> El servidor MCP se documenta como integración externa al entorno del agente; **no** se registra como skill.
+
+| Servidor MCP | Paquete / Conector | Propósito en TurnosAR | Herramientas (Tools) |
+|---|---|---|---|
+| **Context7 MCP** | `@upstash/context7-mcp` | Consultar documentación oficial actualizada y fragmentos de código de `SQLAlchemy 2.0 (AsyncSession)`, `FastAPI`, `Pydantic v2` y `pytest`. | `resolve-library-id`, `query-docs` |
+
+- **Momento de uso**: Durante la exploración (`/opsx:explore`), diseño (`/opsx:propose` → `design.md`) e implementación (`/opsx:apply`) de changes que requieran verificar contratos de librerías del stack (por ejemplo, manejo de transacciones asíncronas, `expire_on_commit=False`, `flush`/`commit`/`rollback` ante `IntegrityError` en `C-22`, `C-23` y `C-29`).
+- **Límites de acceso y privacidad (Ley 25.326)**:
+  - Opera exclusivamente en modo de consulta sobre documentación técnica pública; **no** tiene acceso de lectura ni escritura a la base de datos PostgreSQL local.
+  - **Prohibido** enviar datos reales de pacientes, tokens o credenciales (`API_KEY_*`, `DATABASE_URL`) dentro del parámetro `query` de las herramientas MCP.
 
 ---
 
