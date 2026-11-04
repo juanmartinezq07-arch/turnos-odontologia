@@ -1,7 +1,7 @@
 # CHANGES — Secuencia de Implementación
 
 > Índice canónico de todos los changes de **TurnosAR**. Cada change es atómico: un agente lo implementa en una sesión (~4-6 h).
-> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`), `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`), `C-24` (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`), `C-25` (`openspec/changes/archive/2026-11-02-c-25-disponibilidad-real/`) y `C-27` (`openspec/changes/archive/2026-11-02-c-27-api-agenda-odontologo/`) fueron implementados y archivados; el resto queda `[ ]`.
+> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`), `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`), `C-24` (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`), `C-25` (`openspec/changes/archive/2026-11-02-c-25-disponibilidad-real/`), `C-27` (`openspec/changes/archive/2026-11-02-c-27-api-agenda-odontologo/`), `C-28` (`openspec/changes/archive/2026-11-02-c-28-notificaciones-mock/`) y `C-30` (`openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/`) fueron implementados y archivados; el resto queda `[ ]`.
 
 > **Por qué este árbol y no el anterior.** La v1 (7 changes, camino crítico lineal `C-01→C-02→C-03→C-04`) no representaba el árbol de conocimientos: trataba `disponibilidad`, `catálogos` y `agenda` como dependencias sucesivas de la reserva guest —son paralelas— y **ocultaba la rama de persistencia**, que es dependencia dura porque la migración 003 dropeó `token_cancelacion`, `cancelled_at` y `rn05_un_activo_por_dia`. Corregido en § "Roadmap anterior". `C-02`…`C-07` quedan reservados, no reutilizables.
 
@@ -46,7 +46,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │    └── C-27 api-agenda-odontologo             [x] ARCHIVADO
  │
  ├── TRANSVERSAL ─────────────────────────────────────────────────────────
- │    └── C-28 notificaciones-mock               [ ]
+ │    └── C-28 notificaciones-mock               [x] ARCHIVADO
  │
  ├── CONFLUENCIAS ────────────────────────────────────────────────────────
  │    C-21 + C-24 + C-25 + C-26
@@ -56,7 +56,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │    └── ▸ HITO us-001-completa (5/5 criterios) — no es un change
  │
  │    C-01
- │    └── C-30 decision-frontend-alcance         [ ]
+ │    └── C-30 decision-frontend-alcance         [x] ARCHIVADO
  │
  └── C-29 + C-23 + C-27 + C-30
       └── C-31 frontend-base-react-vite           [ ] BLOQUEADO
@@ -113,7 +113,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | RN03 pasado / horario → 422 | `C-01` | COMPLETADO |
 | **RN04** cancelación libera slot | `C-20`+`C-22` | PENDIENTE |
 | **RN05** 1 activo/paciente/día → 409 | `C-21`+`C-26` | COMPLETADO |
-| US-001 (CU01) | `C-01`+`C-26`+`C-28` | COMPLETADO **4/5 CA** |
+| US-001 (CU01) | `C-01`+`C-26`+`C-28` | COMPLETADO **5/5 CA** |
 | US-002 (CU01) | `C-25` | COMPLETADO |
 | US-003 (CU02) | `C-29` (+`C-21`,`C-24`,`C-25`,`C-26`) | PENDIENTE |
 | US-004 (CU03) | `C-22`+`C-29`+`C-28` | PENDIENTE |
@@ -121,11 +121,11 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | US-006 (CU04) | `C-27` | COMPLETADO |
 | KB-03 rutas públicas (5) | `C-24`,`C-25`,`C-29` | PENDIENTE (`/docs` ya existe) |
 | KB-03 RBAC odontólogo (403) | `C-27` | COMPLETADO |
-| KB-05 notif best-effort | `C-28` | PENDIENTE |
+| KB-05 notif best-effort | `C-28` | COMPLETADO |
 | KB-04 `idx_turno_paciente_fecha` | `C-20` | COMPLETADO |
 | KB-08 layout (`notifications/`,`availability.py`,`reservas.py`,`agenda.py`) | `C-28`,`C-25`,`C-29`,`C-27` | PENDIENTE |
 | KB-10 §RN05 (pregunta Alta) | `C-21` | COMPLETADO (cerrada por C-21) |
-| DD-01 / KB-01 §Fuera de alcance | `C-30`→`C-31`…`C-35` | **BLOQUEADO** |
+| DD-01 / KB-01 §Fuera de alcance | `C-30`→`C-31`…`C-35` | COMPLETADO (`C-30`; `C-31`…`C-35` desbloqueados por DD-08) |
 
 **Sin change, declarado:** consentimiento Ley 25.326 Art. 5.1 (`KB-10` Media: "documentado, no persistido"); notificaciones reales (DD-05: costo + verificación empresarial); pagos, ficha clínica, multi-sucursal, obras sociales (`KB-01 §Fuera de alcance`); **bloqueos de agenda, agenda semanal e historial de transiciones no existen en la KB** — si la cátedra los quiere, se agregan a la KB primero y después entran al roadmap. Ningún change está EN PROGRESO: no hay código a medio escribir.
 
@@ -142,7 +142,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 
 > **Verificado (2026-10-15):** `26 passed` en 3.38 s contra PostgreSQL 16.15 (Debian, `btree_gist 1.7`), sin SQLite ni mocks.
 >
-> **Déficit (documentado, no se replanifica `POST /turnos`):** US-001 tiene **5** criterios (`KB-06` L11–L15): C-01 cumple **3**, **RN05** (L14) fue cubierto por `C-26` (**4/5**) y falta **notificación mock** (L15) → `C-28`.
+> **Déficit (documentado, no se replanifica `POST /turnos`):** US-001 tiene **5** criterios (`KB-06` L11–L15): C-01 cumple **3**, **RN05** (L14) fue cubierto por `C-26` y **notificación mock** (L15) fue cubierto por `C-28` (**5/5**).
 >
 > **Deuda con fecha:** `tests/conftest.py:8` usa `asyncio.WindowsSelectorEventLoopPolicy()`, eliminada en Python 3.16: con 3.16 la suite deja de colectar. Se corrige en `C-21`.
 
@@ -186,14 +186,14 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-06 §US-006` · `KB-07 §Flujo 4` · `KB-03 §RBAC` · `KB-08 §Seguridad`
 
 ### [C-28] `notificaciones-mock`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-02-c-28-notificaciones-mock/`)
 - **Scope**: `app/notifications/{interface,mock}.py` (la interfaz que `KB-02`/`KB-08`/DD-05 exigen y hoy no existe) + llamada **best-effort post-commit** en toda escritura: si el mock falla se loguea y **el turno igual persiste** con 201 (`KB-05 §Excepciones`). `NOTIF_BACKEND=mock` en config y `.env.example`. Tests: llamada registrada; con mock que lanza, el turno queda persistido.
 - **Dependencias**: `C-01`
 - **Governance**: BAJO — interfaz + mock en memoria, sin canal externo ni costo
 - **Leer antes**: `KB-09 §DD-05` · `KB-05 §Excepciones` · `KB-08 §Patrones` · `KB-02 §Integraciones`
 
 ### [C-30] `decision-frontend-alcance`
-- **Estado**: [x] archivado (openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/) — **desbloquea C-31…C-35**
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/`) — **desbloquea C-31…C-35**
 - **Scope**: resolver por escrito si DD-01 se mantiene o se deroga. **No escribe código de UI**: salida documental en `KB-09 §DD-08` y `KB-01 §Fuera de alcance`. Preguntas: ¿se deroga DD-01?, ¿cómo obtiene credencial el navegador sin exponer la API key (`KB-08 §Seguridad`)?, ¿qué costo/plazo?
 - **Dependencias**: `C-01`
 - **Governance**: MEDIO — toca una decisión de alcance cerrada
