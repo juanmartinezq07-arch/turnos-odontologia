@@ -204,7 +204,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 ## FASE 3 — Agenda operable (GATE 2–4)
 
 ### [C-22] `api-cancelacion-recepcionista`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[ ]` pendiente (preparado en `openspec/changes/c-22-api-cancelacion-recepcionista/`)
 - **Scope**: `POST /turnos/{id}/cancelacion` (API key) → `estado='cancelado'` + `cancelled_at=now()`; el `WHERE (estado='activo')` de los EXCLUDE deja de contar el rango → **el slot se libera**. **Idempotente**: no cambia `cancelled_at`. Tests: cancela, idempotencia, 401 sin credencial, 404 `NO_ENCONTRADO` si el id no existe.
 - **Dependencias**: `C-01`, `C-20`
 - **Governance**: MEDIO — escritura que libera un slot + idempotencia
