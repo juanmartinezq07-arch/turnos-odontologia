@@ -1,5 +1,6 @@
 """Seed ficticio (task 6.3). Solo datos sinteticos. Uso: python -m app.seed."""
 import asyncio
+import sys
 from datetime import datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
@@ -83,4 +84,6 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(main())
