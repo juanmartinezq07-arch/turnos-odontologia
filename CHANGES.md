@@ -61,7 +61,7 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │    └── C-30 decision-frontend-alcance         [x] ARCHIVADO
  │
  └── C-29 + C-23 + C-27 + C-30
-      └── C-31 frontend-base-react-vite           [ ] BLOQUEADO
+      └── C-31 frontend-base-vanilla              [x] ARCHIVADO
            ├── C-32 ui-agenda-diaria              [ ] (también C-27)
            ├── C-33 ui-dar-turno-con-errores      [ ] (también C-24, C-25)
            ├── C-34 ui-reprogramar-cancelar-y-estados [ ] (también C-22, C-23)
@@ -78,7 +78,7 @@ GATE 1  → C-20 ‖ C-24 ‖ C-25 ‖ C-27 ‖ C-28 ‖ C-30      (6 en paralel
 GATE 2  → C-21 ‖ C-22
 GATE 3  → C-23 ‖ C-26                                (cierra el HITO us-001)
 GATE 4  → C-29
-GATE 5  → C-31                                       (bloqueado por C-30)
+GATE 5  → C-31                                       (listo para proponer)
 GATE 6  → C-32 ‖ C-33 ‖ C-34 ‖ C-35                  (4 en paralelo)
 ```
 
@@ -127,7 +127,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | KB-04 `idx_turno_paciente_fecha` | `C-20` | COMPLETADO |
 | KB-08 layout (`notifications/`,`availability.py`,`reservas.py`,`agenda.py`) | `C-28`,`C-25`,`C-29`,`C-27` | PENDIENTE |
 | KB-10 §RN05 (pregunta Alta) | `C-21` | COMPLETADO (cerrada por C-21) |
-| DD-01 / KB-01 §Fuera de alcance | `C-30`→`C-31`…`C-35` | COMPLETADO (`C-30`; `C-31`…`C-35` desbloqueados por DD-08) |
+| DD-01 / KB-01 §Fuera de alcance | `C-30`→`C-31`…`C-35` | COMPLETADO (`C-30`; `C-31`…`C-35` desbloqueados por DD-08, implementación vanilla) |
 
 **Sin change, declarado:** consentimiento Ley 25.326 Art. 5.1 (`KB-10` Media: "documentado, no persistido"); notificaciones reales (DD-05: costo + verificación empresarial); pagos, ficha clínica, multi-sucursal, obras sociales (`KB-01 §Fuera de alcance`); **bloqueos de agenda, agenda semanal e historial de transiciones no existen en la KB** — si la cátedra los quiere, se agregan a la KB primero y después entran al roadmap. Ningún change está EN PROGRESO: no hay código a medio escribir.
 
@@ -195,7 +195,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-09 §DD-05` · `KB-05 §Excepciones` · `KB-08 §Patrones` · `KB-02 §Integraciones`
 
 ### [C-30] `decision-frontend-alcance`
-- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/`) — **desbloquea C-31…C-35**
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/`) — **desbloquea C-31…C-35** (DD-08 refinada posteriormente a implementación vanilla, sin React/Vite)
 - **Scope**: resolver por escrito si DD-01 se mantiene o se deroga. **No escribe código de UI**: salida documental en `KB-09 §DD-08` y `KB-01 §Fuera de alcance`. Preguntas: ¿se deroga DD-01?, ¿cómo obtiene credencial el navegador sin exponer la API key (`KB-08 §Seguridad`)?, ¿qué costo/plazo?
 - **Dependencias**: `C-01`
 - **Governance**: MEDIO — toca una decisión de alcance cerrada
@@ -213,7 +213,7 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 - **Leer antes**: `KB-06 §US-004` · `KB-07 §Flujo 3` · `KB-05 §RN04` · `KB-04 §Turno`
 
 ### [C-23] `api-reprogramacion-atómica`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-05-c-23-api-reprogramacion-atomica/`)
 - **Scope**: `POST /turnos/{id}/reprogramacion` en **una sola transacción**: marca el original `cancelado` e inserta el nuevo. Si el destino viola RN02/RN03/RN05 → **rollback total** y el original sigue `activo`. Tests: destino libre → 200; destino tomado → 409 con el original **intacto** (assert en DB); al pasado → 422 sin tocar el original.
 - **Dependencias**: `C-22`, `C-20`
 - **Governance**: **ALTO** — atomicidad y ventana de carrera entre cancelar e insertar. **Frenar y esperar revisión**
@@ -236,39 +236,39 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 
 ---
 
-## FASE 4 — Interfaz (fuera del alcance de la entrega; todo BLOQUEADO por `C-30`)
+## FASE 4 — Interfaz (HTML/CSS/JS vanilla; C-31…C-35 archivados)
 
-### [C-31] `frontend-base-react-vite`
-- **Estado**: `[ ]` pendiente — BLOQUEADO por `C-30`
-- **Scope**: React + Vite + cliente HTTP tipado que consume el contrato `{code, message}`; manejo centralizado de errores por código de regla (`RN02_*`, `RN05`, `RN03_*`), nunca parsear texto; credencial según decida `C-30` (nunca la API key en el bundle).
+### [C-31] `frontend-base-vanilla`
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-05-c-31-frontend-base-vanilla/`)
+- **Scope**: base de frontend **sin framework ni build** (HTML/CSS/JS nativo) servida por FastAPI en el mismo origen (sin React, Vite, TypeScript, npm ni bundler): montaje de archivos estáticos (`StaticFiles`), organización de archivos, navegación entre pantallas y cliente `fetch` que consume el contrato `{code, message}`; manejo centralizado de errores por código de regla (`RN02_*`, `RN05`, `RN03_*`), nunca parsear texto; credenciales de rol ingresadas en runtime y guardadas solo en memoria (nunca en archivos estáticos). (Migrado desde React+Vite a vanilla HTML/CSS/JS.)
 - **Dependencias**: `C-29`, `C-23`, `C-27`, `C-30`
-- **Governance**: **ALTO** — stack nuevo completo; contradice DD-01. **Frenar y esperar revisión**
-- **Leer antes**: `KB-09 §DD-01` · `KB-01 §Fuera de alcance` · `KB-08 §Seguridad`
+- **Governance**: **ALTO** — stack nuevo (servido por FastAPI, mismo origen); contradice DD-01 derogado por DD-08. **Frenar y esperar revisión**
+- **Leer antes**: `KB-09 §DD-08` · `KB-01 §Fuera de alcance` · `KB-08 §Seguridad`
 
 ### [C-32] `ui-agenda-diaria`
-- **Estado**: `[ ]` pendiente — BLOQUEADO por `C-30`
-- **Scope**: pantalla de agenda del día sobre `GET /agenda` (orden por `inicio`, prestación + duración, sillón, paciente) y el filtro de cancelados; 403 visible si el odontólogo pide agenda ajena.
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-05-c-32-ui-agenda-diaria/`)
+- **Scope**: pantalla de agenda del día sobre `GET /agenda` (orden por `inicio`, prestación + duración, sillón, paciente) y el filtro de cancelados; 403 visible si el odontólogo pide agenda ajena. (Sobre la base vanilla de C-31, sin framework.)
 - **Dependencias**: `C-31` (también requiere `C-27`)
 - **Governance**: MEDIO
 - **Leer antes**: `KB-06 §US-006` · `KB-07 §Flujo 4` · `KB-03 §RBAC`
 
 ### [C-33] `ui-dar-turno-con-errores`
-- **Estado**: `[ ]` pendiente — BLOQUEADO por `C-30`
-- **Scope**: alta para recepcionista sobre catálogos + `GET /disponibilidad`; `POST /turnos` sin mandar `fin` (RN01 lo calcula el servidor); 409 con código por regla y 422 de validación diferenciados en la UI.
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-05-c-33-ui-dar-turno-con-errores/`)
+- **Scope**: alta para recepcionista sobre catálogos + `GET /disponibilidad`; `POST /turnos` sin mandar `fin` (RN01 lo calcula el servidor); 409 con código por regla y 422 de validación diferenciados en la UI. (Sobre la base vanilla de C-31, sin framework.)
 - **Dependencias**: `C-31` (también requiere `C-24`, `C-25`)
 - **Governance**: MEDIO
 - **Leer antes**: `KB-06 §US-001 + §US-002` · `KB-05 §RN01 + §RN02 + §Excepciones` · `KB-07 §Flujo 2`
 
 ### [C-34] `ui-reprogramar-cancelar-y-estados`
-- **Estado**: `[ ]` pendiente — BLOQUEADO por `C-30`
-- **Scope**: cancelación y reprogramación desde la UI mostrando el resultado de la transacción; si la reprogramación falla, dejar explícito que **el original sigue activo** (rollback total); estados `activo`/`cancelado` con `cancelled_at`.
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-05-c-34-ui-reprogramar-cancelar-y-estados/`)
+- **Scope**: cancelación y reprogramación desde la UI mostrando el resultado de la transacción; si la reprogramación falla, dejar explícito que **el original sigue activo** (rollback total); estados `activo`/`cancelado` con `cancelled_at`. (Sobre la base vanilla de C-31, sin framework.)
 - **Dependencias**: `C-31` (también requiere `C-22`, `C-23`)
 - **Governance**: MEDIO
 - **Leer antes**: `KB-06 §US-004 + §US-005` · `KB-07 §Flujo 3` · `KB-05 §RN04`
 
 ### [C-35] `ui-reserva-publica`
-- **Estado**: `[ ]` pendiente — BLOQUEADO por `C-30`
-- **Scope**: flujo público sin autenticación: catálogos → disponibilidad → `POST /reservas` → muestra y guarda el **token de cancelación** → cancelación con token. Solo contacto ficticio; la UI no pide ni muestra dato clínico (Ley 25.326).
+- **Estado**: `[x]` archivado (`openspec/changes/archive/2026-11-05-c-35-ui-reserva-publica/`)
+- **Scope**: flujo público sin autenticación: catálogos → disponibilidad → `POST /reservas` → muestra y guarda el **token de cancelación** → cancelación con token. Solo contacto ficticio; la UI no pide ni muestra dato clínico (Ley 25.326). (Sobre la base vanilla de C-31, sin framework.)
 - **Dependencias**: `C-31` (también requiere `C-25`, `C-29`)
 - **Governance**: **ALTO** — superficie pública sin auth
 - **Leer antes**: `KB-06 §US-003 + §US-004` · `KB-07 §Flujo 1` · `KB-03 §Rutas públicas` · `KB-09 §DD-06`

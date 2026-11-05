@@ -154,22 +154,30 @@ async def _precheck_rn02(
 
 
 async def _precheck_rn05(
-    session: AsyncSession, paciente_id, inicio: datetime
+    session: AsyncSession, paciente_id, inicio: datetime, excluir_turno_id=None
 ) -> None:
-    """RN05: maximo 1 turno activo por paciente y dia calendario."""
+    """RN05: maximo 1 turno activo por paciente y dia calendario.
+
+    `excluir_turno_id`: turno que se esta reprogramando (ya cancelado en memoria)
+    y que no debe contarse como activo en el destino.
+    """
     tz = ZoneInfo(get_tz_consultorio())
     inicio_local = inicio.astimezone(tz)
     dia = inicio_local.date()
     inicio_dia = datetime(dia.year, dia.month, dia.day, tzinfo=tz)
     fin_dia = inicio_dia + timedelta(days=1)
 
+    condiciones = [
+        Turno.paciente_id == paciente_id,
+        Turno.estado == "activo",
+        Turno.inicio >= inicio_dia,
+        Turno.inicio < fin_dia,
+    ]
+    if excluir_turno_id is not None:
+        condiciones.append(Turno.id != excluir_turno_id)
+
     res = await session.execute(
-        select(Turno.id).where(
-            Turno.paciente_id == paciente_id,
-            Turno.estado == "activo",
-            Turno.inicio >= inicio_dia,
-            Turno.inicio < fin_dia,
-        ).limit(1)
+        select(Turno.id).where(*condiciones).limit(1)
     )
     if res.first() is not None:
         raise DomainConflict(
@@ -285,12 +293,16 @@ async def reprogramar_turno(
     await _validar_temporalidad(session, turno_orig.profesional_id, nuevo_inicio, fin_nuevo)
     await _precheck_rn02(session, turno_orig.profesional_id, sillon_destino, nuevo_inicio, fin_nuevo)
 
-    # Cancelar original en memoria/sesión
+    # Cancelar original (en memoria y en DB dentro de la transacción) para liberar
+    # el slot/RN05 antes de insertar el nuevo (atomicidad: rollback revierte ambos).
     turno_orig.estado = "cancelado"
     turno_orig.cancelled_at = _ahora()
+    await session.flush()
 
-    # Precheck RN-05 posterior a cancelación de turno original
-    await _precheck_rn05(session, turno_orig.paciente_id, nuevo_inicio)
+    # Precheck RN-05 posterior a cancelación de turno original (excluye el propio)
+    await _precheck_rn05(
+        session, turno_orig.paciente_id, nuevo_inicio, excluir_turno_id=turno_orig.id
+    )
 
     # Crear nuevo turno
     nuevo_turno = Turno(

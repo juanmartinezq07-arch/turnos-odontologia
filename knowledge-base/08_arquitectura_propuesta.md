@@ -49,7 +49,7 @@ turnos-odontologia/
 │   │   └── test_reserva_guest.py       # end-to-end guest + cancelación
 │   ├── pyproject.toml
 │   └── .env.example
-├── frontend/                   # placeholder BLOQUEADO por C-30 (DD-01 sigue vigente)
+└── frontend/                   # placeholder: interfaz vanilla (HTML/CSS/JS) servida por FastAPI; habilitada por DD-08 (C-30) para Fase 4 (C-31..C-35)
 ├── .agents/skills/             # skills versionadas en el repo
 ├── knowledge-base/             # esta KB
 ├── discovery/discovery.md      # artefacto Discovery (fuente)

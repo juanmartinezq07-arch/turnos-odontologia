@@ -160,6 +160,36 @@ async def test_reprogramacion_conflicto_destino_rollback_total(
     assert r_canc.json()["estado"] == "cancelado"
 
 
+async def test_reprogramacion_mismo_dia_mismo_paciente(
+    client, seed_catalog, headers_recepcion
+):
+    """RN05 no debe rechazar la reprogramación al mismo día del mismo paciente:
+    el turno original queda cancelado y el nuevo queda activo."""
+    inicio_original = proximo_dia_habil(10, 0)
+    r_alta = await client.post(
+        "/turnos",
+        json=_alta_payload(seed_catalog, inicio_original),
+        headers=headers_recepcion,
+    )
+    assert r_alta.status_code == 201
+    turno_orig_id = r_alta.json()["id"]
+
+    # Reprogramar a la misma fecha, otra hora (sin solapar con el original)
+    nuevo_inicio = inicio_original.replace(hour=14, minute=0)
+
+    r_reprog = await client.post(
+        f"/turnos/{turno_orig_id}/reprogramacion",
+        headers=headers_recepcion,
+        json={"inicio": nuevo_inicio.isoformat()},
+    )
+    assert r_reprog.status_code == 200, r_reprog.text
+    datos = r_reprog.json()
+    assert datos["original"]["id"] == turno_orig_id
+    assert datos["original"]["estado"] == "cancelado"
+    assert datos["nuevo"]["estado"] == "activo"
+    assert datos["nuevo"]["id"] != turno_orig_id
+
+
 async def test_reprogramacion_errores_validacion(
     client, seed_catalog, headers_recepcion
 ):

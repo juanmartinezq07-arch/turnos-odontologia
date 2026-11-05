@@ -33,7 +33,7 @@ En los consultorios la agenda se lleva en cuadernos o planillas y la coordinaci�
 - Reportes de liquidación, caja diaria, facturación electrónica ante ARCA.
 - Multi-sucursal, roles configurables, sobreturno como primera clase.
 - Autenticación del paciente, portal del paciente, historia de turnos por usuario.
-- Frontend propio (web o móvil) en la entrega base del backend; habilitado modularmente a partir de la resolución DD-08 (C-30) para la Fase 4.
+- Frontend propio en la entrega base del backend; habilitado modularmente a partir de la resolución DD-08 (C-30) para la Fase 4, implementado sin framework (HTML/CSS/JS vanilla servido por FastAPI, mismo origen).
 
 ## Métricas de éxito
 

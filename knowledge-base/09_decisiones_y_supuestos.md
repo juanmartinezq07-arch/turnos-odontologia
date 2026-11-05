@@ -53,11 +53,11 @@
 
 
 ### DD-08 — Alcance de Interfaz y Derogación Condicionada de DD-01
-**Decisión**: Derogar la exclusión estricta de DD-01 para habilitar el desarrollo modular de la interfaz web (Fase 4, C-31 a C-35), manteniendo el backend como sistema autónomo desacoplado.
-**Contexto**: El núcleo evaluado del MVP y las garantías de concurrencia (RN02/RN05) quedaron consolidados en el backend. La adición de interfaces React + Vite facilita la operatividad de la agenda y reserva pública sin alterar los contratos REST establecidos.
-**Alternativas consideradas**: (a) Mantener DD-01 de forma indefinida y operar solo vía OpenAPI/Swagger; (b) Reemplazar la API con una aplicación monolítica server-side.
-**Justificación**: La separación desacoplada permite construir interfaces SPA estáticas independientes. Para preservar la seguridad, el frontend de demo no incluye API keys maestras embebidas en el bundle (VITE_*), sino que las credenciales protegidas se suministran en tiempo de ejecución o mediante proxy de sesión.
-**Trade-offs aceptados**: Requiere mantener sincronizados los esquemas OpenAPI y los tipos TypeScript del cliente.
+**Decisión**: Derogar la exclusión estricta de DD-01 para habilitar el desarrollo modular de la interfaz web (Fase 4, C-31 a C-35), manteniendo el backend como sistema autónomo desacoplado. La interfaz se implementa **sin framework ni proceso de build**: HTML, CSS y JavaScript nativo servidos por FastAPI en el mismo origen (sin React, Vite, TypeScript, npm ni bundler).
+**Contexto**: El núcleo evaluado del MVP y las garantías de concurrencia (RN02/RN05) quedaron consolidados en el backend. La adición de una interfaz web estática y liviana facilita la operatividad de la agenda y la reserva pública sin alterar los contratos REST establecidos.
+**Alternativas consideradas**: (a) Mantener DD-01 de forma indefinida y operar solo vía OpenAPI/Swagger; (b) Reemplazar la API con una aplicación monolítica server-side; (c) Frontend con framework (React + Vite) y bundle tipado (descartado: agrega build tooling y dependencias sin sumar puntos de cátedra).
+**Justificación**: La separación desacoplada permite servir archivos estáticos desde el mismo origen que la API, evitando CORS y configuración adicional. Para preservar la seguridad, el frontend no incluye API keys maestras embebidas en archivos estáticos; las credenciales de rol (recepcionista/odontólogo) se ingresan en tiempo de ejecución y viven solo en memoria del navegador. No se afirma que queden ocultas al usuario autorizado que las ingresa: quien las posee puede verlas en su propia sesión.
+**Trade-offs aceptados**: El cliente HTTP es JavaScript nativo (`fetch`) que mapea directamente el contrato `{code, message}`; no hay tipos estáticos ni tooling de build. Se mantiene sincronizado el contrato OpenAPI con los nombres de campos usados en el cliente.
 
 ## Supuestos inferidos
 

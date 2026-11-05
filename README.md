@@ -138,7 +138,7 @@ backend/app/api/v1/     # turnos.py (POST /turnos)
 backend/app/schemas/    # TurnoCreate/TurnoOut estrictos (sin campo fin)
 backend/alembic/versions/ # 001 tablas, 002 doble EXCLUDE, 003 recorte
 backend/tests/          # suite pytest contra Postgres real
-frontend/               # placeholder BLOQUEADO por C-30 (solo README)
+frontend/               # placeholder; interfaz vanilla habilitada por DD-08 (C-31..C-35)
 docker-compose.yml      # raíz: orquesta db (+ futuro frontend)
 docs/discovery/       # informe-discovery.md + .pdf + verificación de fuentes
 knowledge-base/       # los 10 archivos canónicos del dominio

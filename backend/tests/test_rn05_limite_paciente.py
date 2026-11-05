@@ -4,6 +4,8 @@ Tests de punta a punta contra POST /turnos con Postgres real.
 Esperan fallar en RED porque la aplicación aún no mapea rn05_un_activo_por_dia
 a RN05 ni hace precheck de aplicación.
 """
+from datetime import timedelta
+
 from tests.conftest import proximo_dia_habil
 
 
@@ -73,10 +75,11 @@ async def test_rn05_mismo_paciente_dia_distinto_201(
         headers=headers_recepcion,
     )
     assert r1.status_code == 201, r1.text
-    otro_dia = proximo_dia_habil(10, 0)
-    # Asegurar que es un día diferente al primero
-    if otro_dia.date() == inicio.date():
-        otro_dia = otro_dia.replace(day=inicio.day + 2)
+    # Día distinto y hábil (evitar fines de semana sin horario)
+    otro_dia = inicio + timedelta(days=1)
+    while otro_dia.weekday() > 4:
+        otro_dia += timedelta(days=1)
+    otro_dia = otro_dia.replace(hour=10, minute=0, second=0, microsecond=0)
     r2 = await client.post(
         "/turnos",
         json=_alta(seed_catalog, otro_dia, telefono="11-0000-0001"),

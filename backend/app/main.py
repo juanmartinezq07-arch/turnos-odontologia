@@ -1,10 +1,15 @@
 """Factory FastAPI: solo cableado (routers + handlers). Sin logica de dominio."""
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.v1 import agenda, catalogos, disponibilidad, reservas, turnos
 from app.core.errors import DomainConflict, NotFound
+
+FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 
 
 def _error(code: str, message: str, status: int) -> JSONResponse:
@@ -40,6 +45,11 @@ def create_app() -> FastAPI:
     app.include_router(agenda.router)
     app.include_router(turnos.router, tags=["turnos"])
     app.include_router(reservas.router, tags=["reservas"])
+
+    # Servir la interfaz estática (HTML/CSS/JS) en el mismo origen (C-31).
+    # Se monta al final para no ocultar /docs ni /openapi.json ni los routers.
+    if FRONTEND_DIR.exists():
+        app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
     return app
 
 
