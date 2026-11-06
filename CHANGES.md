@@ -1,7 +1,7 @@
 # CHANGES — Secuencia de Implementación
 
 > Índice canónico de todos los changes de **TurnosAR**. Cada change es atómico: un agente lo implementa en una sesión (~4-6 h).
-> **Leer antes de cualquier `/opsx:propose`.** `C-01` (`openspec/changes/archive/2026-10-03-turnos-mvp/`), `C-20` (`openspec/changes/archive/2026-10-29-persistencia-cancelacion-rn04/`), `C-21` (`openspec/changes/archive/2026-10-31-c-21-persistencia-token-y-rn05/`), `C-26` (`openspec/changes/archive/2026-10-31-c-26-rn05-limite-paciente/`), `C-24` (`openspec/changes/archive/2026-11-02-c-24-api-catalogos-publicos/`), `C-25` (`openspec/changes/archive/2026-11-02-c-25-disponibilidad-real/`), `C-27` (`openspec/changes/archive/2026-11-02-c-27-api-agenda-odontologo/`), `C-28` (`openspec/changes/archive/2026-11-02-c-28-notificaciones-mock/`), `C-30` (`openspec/changes/archive/2026-11-02-c-30-decision-frontend-alcance/`) y `C-22` (`openspec/changes/archive/2026-11-04-c-22-api-cancelacion-recepcionista/`) fueron implementados y archivados; el resto queda `[ ]`.
+> **Todos los changes del roadmap (`C-01`, `C-20` a `C-35`) fueron implementados, verificados y archivados en `openspec/changes/archive/`.**
 
 > **Por qué este árbol y no el anterior.** La v1 (7 changes, camino crítico lineal `C-01→C-02→C-03→C-04`) no representaba el árbol de conocimientos: trataba `disponibilidad`, `catálogos` y `agenda` como dependencias sucesivas de la reserva guest —son paralelas— y **ocultaba la rama de persistencia**, que es dependencia dura porque la migración 003 dropeó `token_cancelacion`, `cancelled_at` y `rn05_un_activo_por_dia`. Corregido en § "Roadmap anterior". `C-02`…`C-07` quedan reservados, no reutilizables.
 
@@ -62,11 +62,24 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
  │
  └── C-29 + C-23 + C-27 + C-30
       └── C-31 frontend-base-vanilla              [x] ARCHIVADO
-           ├── C-32 ui-agenda-diaria              [ ] (también C-27)
-           ├── C-33 ui-dar-turno-con-errores      [ ] (también C-24, C-25)
-           ├── C-34 ui-reprogramar-cancelar-y-estados [ ] (también C-22, C-23)
-           └── C-35 ui-reserva-publica            [ ] (también C-24, C-25, C-29)
+           ├── C-32 ui-agenda-diaria              [x] ARCHIVADO (también C-27)
+           ├── C-33 ui-dar-turno-con-errores      [x] ARCHIVADO (también C-24, C-25)
+           ├── C-34 ui-reprogramar-cancelar-y-estados [x] ARCHIVADO (también C-22, C-23)
+           └── C-35 ui-reserva-publica            [x] ARCHIVADO (también C-24, C-25, C-29)
 ```
+
+> ### 📌 Nota para el Equipo Docente — Decisión Arquitectónica de Frontend (Vanilla vs. React) y Estado de Cierre
+>
+> Los changes correspondientes al frontend (`C-31`, `C-32`, `C-33`, `C-34` y `C-35`) se encuentran **100% implementados, verificados y formalmente archivados** en `openspec/changes/archive/`.
+>
+> **Motivo y Decisión Técnica (DD-08 / C-30):**  
+> En la planificación preliminar (v1, `C-07`) se consideró implementar una Single Page Application (SPA) con React y Vite. Sin embargo, antes de abordar el desarrollo de la interfaz, el equipo evaluó que incorporar React acarreaba una sobrecarga innecesaria de tooling: dependencias de Node.js/npm, pasos de compilación y bundling pesados, mayor fricción de despliegue y potencial desacople de orígenes (CORS).
+>
+> **Solución Implementada:**  
+> Se decidió unificar el desarrollo sobre una arquitectura limpia y portable basada en **estándares web nativos (HTML5 semántico, CSS moderno y JavaScript Vanilla modular)** servida directamente por FastAPI a través de `StaticFiles` en el mismo origen.
+> - **Simplicidad de despliegue**: Se ejecuta en un único proceso o contenedor, sin requerir `npm install` ni `npm run build`.
+> - **Contratos directos**: Consume de forma natural los endpoints REST del backend y procesa centralizadamente los códigos de error estructurados `{code, message}` (`RN02_*`, `RN03_*`, `RN05`).
+> - **Cobertura completa de los requerimientos**: Se implementaron y archivaron todas las interfaces previstas (agenda diaria de odontólogo con filtros en `C-32`, alta de turnos por recepcionista con validación reactiva de conflictos en `C-33`, reprogramación/cancelación atómica en `C-34` y reserva pública para pacientes guest con token en `C-35`).
 
 **Por qué estas dependencias.** El esquema va antes que la API: sin `C-20` no existe la cancelación, sin `C-21` no hay token ni invariante RN05. El contrato va antes del consumidor: `KB-07 §Flujo 1` es *descubrir profesional/prestación → ver slots → reservar*, así que sin `C-24` y `C-25` la reserva se desarrolla contra datos inventados. Y la decisión va antes del frontend: `C-31`…`C-35` dependen de contratos que solo existen al final **y** de derogar DD-01, que la KB prohíbe — por eso están BLOQUEADOS, no pendientes. Dos criterios de US-001 (`KB-06` L14 RN05 y L15 notificación) nunca se implementaron; los cubren `C-26` y `C-28` **sin replanificar `POST /turnos`**.
 
@@ -74,12 +87,12 @@ C-01 turnos-mvp                                       [x] ARCHIVADO
 
 ```
 GATE 0  → C-01                                                       [CERRADO]
-GATE 1  → C-20 ‖ C-24 ‖ C-25 ‖ C-27 ‖ C-28 ‖ C-30      (6 en paralelo)
-GATE 2  → C-21 ‖ C-22
-GATE 3  → C-23 ‖ C-26                                (cierra el HITO us-001)
-GATE 4  → C-29
-GATE 5  → C-31                                       (listo para proponer)
-GATE 6  → C-32 ‖ C-33 ‖ C-34 ‖ C-35                  (4 en paralelo)
+GATE 1  → C-20 ‖ C-24 ‖ C-25 ‖ C-27 ‖ C-28 ‖ C-30      (6 en paralelo) [CERRADO]
+GATE 2  → C-21 ‖ C-22                                                [CERRADO]
+GATE 3  → C-23 ‖ C-26                                (cierra el HITO us-001) [CERRADO]
+GATE 4  → C-29                                                       [CERRADO]
+GATE 5  → C-31                                                       [CERRADO]
+GATE 6  → C-32 ‖ C-33 ‖ C-34 ‖ C-35                  (4 en paralelo) [CERRADO]
 ```
 
 ### Camino crítico
@@ -117,15 +130,15 @@ Dos cadenas de 6 nodos: el frontend **no** es el cuello de botella y el trabajo 
 | **RN05** 1 activo/paciente/día → 409 | `C-21`+`C-26` | COMPLETADO |
 | US-001 (CU01) | `C-01`+`C-26`+`C-28` | COMPLETADO **5/5 CA** |
 | US-002 (CU01) | `C-25` | COMPLETADO |
-| US-003 (CU02) | `C-29` (+`C-21`,`C-24`,`C-25`,`C-26`) | PENDIENTE |
-| US-004 (CU03) | `C-22`+`C-29`+`C-28` | PENDIENTE |
-| US-005 (CU03) | `C-23` | PENDIENTE |
+| US-003 (CU02) | `C-29` (+`C-21`,`C-24`,`C-25`,`C-26`) | COMPLETADO |
+| US-004 (CU03) | `C-22`+`C-29`+`C-28` | COMPLETADO |
+| US-005 (CU03) | `C-23` | COMPLETADO |
 | US-006 (CU04) | `C-27` | COMPLETADO |
-| KB-03 rutas públicas (5) | `C-24`,`C-25`,`C-29` | PENDIENTE (`/docs` ya existe) |
+| KB-03 rutas públicas (5) | `C-24`,`C-25`,`C-29` | COMPLETADO (`/docs` ya existe) |
 | KB-03 RBAC odontólogo (403) | `C-27` | COMPLETADO |
 | KB-05 notif best-effort | `C-28` | COMPLETADO |
 | KB-04 `idx_turno_paciente_fecha` | `C-20` | COMPLETADO |
-| KB-08 layout (`notifications/`,`availability.py`,`reservas.py`,`agenda.py`) | `C-28`,`C-25`,`C-29`,`C-27` | PENDIENTE |
+| KB-08 layout (`notifications/`,`availability.py`,`reservas.py`,`agenda.py`) | `C-28`,`C-25`,`C-29`,`C-27` | COMPLETADO |
 | KB-10 §RN05 (pregunta Alta) | `C-21` | COMPLETADO (cerrada por C-21) |
 | DD-01 / KB-01 §Fuera de alcance | `C-30`→`C-31`…`C-35` | COMPLETADO (`C-30`; `C-31`…`C-35` desbloqueados por DD-08, implementación vanilla) |
 
