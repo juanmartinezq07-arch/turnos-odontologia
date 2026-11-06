@@ -1,183 +1,252 @@
-# TurnosAR — turnos-odontologia
+# TurnosAR — Sistema de Gestión de Turnos Odontológicos
 
-MVP de API para alta de turnos en consultorios odontológicos (mercado
-argentino). Trabajo de integración de Metodología I (TUP): del Discovery al
-primer change con Spec-Driven Development (OpenSpec) y Active Stack.
+> **Trabajo Práctico Integrador — Metodología en Sistemas I (TUP — UTN)**  
+> **Grupo:** Dinosaurios Feroces  
+> **Integrantes:**  
+> - Isaías Morinigo  
+> - Juan Martínez  
 
-El change C-01 implementa una sola funcionalidad: **crear un turno evitando
-solapamientos por profesional y por sillón/box (CU01 + RN02)**. La invariante
-central vive en PostgreSQL como doble `EXCLUDE USING gist` parcial, no solo
-como validación en Python. RN01/RN03 se incluyen solo como soporte del flujo.
-CU02 (reserva guest), CU03 (cancelación/reprogramación) y CU04 (agenda) son
-trabajo futuro, fuera del change.
+---
 
-## Requisitos
+## 📖 Acerca del Proyecto
 
-- Python 3.12+
-- Docker Compose (para la base `db`, Postgres 16)
-- Git
+**TurnosAR** es un sistema integral de gestión de turnos para consultorios odontológicos en Argentina, diseñado e implementado siguiendo la metodología **Spec-Driven Development (SDD)** con **OpenSpec** y **Active Stack**.
 
-## Instalación
+El sistema resuelve la problemática de asignación de turnos concurrentes y reglas de negocio complejas mediante una arquitectura robusta donde las invariantes críticas están garantizadas directamente a nivel de base de datos (PostgreSQL 16) y reforzadas en el dominio:
 
+### Reglas de Negocio Implementadas (RN01 – RN05)
+- **RN01 (Cálculo de fin en servidor):** La hora de finalización del turno no la envía el cliente; la calcula el servidor (`fin = inicio + duracion_min`) según la prestación solicitada.
+- **RN02 (Invariante de solapamiento en persistencia):** Doble constraint de exclusión `EXCLUDE USING gist` sobre intervalos semiabiertos `[inicio, fin)` con predicado parcial `WHERE (estado = 'activo')`. Impide solapamientos tanto por **profesional** como por **sillón/box**, resolviendo carreras concurrentes a nivel motor de base de datos sin riesgo de condiciones de carrera en memoria.
+- **RN03 (Temporalidad y horarios):** Validación estricta que impide turnos en el pasado o fuera de los horarios de atención configurados para el consultorio.
+- **RN04 (Cancelación y liberación de slot):** Cancelación idempotente con registro de auditoría (`cancelled_at`). Al pasar a `cancelado`, el slot se libera de inmediato para nuevas reservas.
+- **RN05 (Límite de turnos por paciente):** Restricción de máximo 1 turno activo por paciente por día calendario mediante un índice parcial único en PostgreSQL, previniendo acaparamientos de turnos.
+
+### Módulos y Casos de Uso Soportados
+1. **Catálogos Públicos:** Consulta abierta de profesionales activos, sillones y prestaciones con sus duraciones.
+2. **Disponibilidad en Tiempo Real:** Cálculo funcional y determinista de slots libres respetando horarios, turnos ocupados y descartando el pasado.
+3. **Agenda para Profesionales:** Visualización ordenada cronológicamente de la agenda diaria por profesional, con control de acceso RBAC (`API_KEY_ODONTOLOGO`), prevención de acceso a agendas ajenas (HTTP 403) y filtros opcionales de cancelados.
+4. **Alta de Turnos por Recepcionista:** Asignación transaccional con diferenciación reactiva de errores (`409` por conflicto de sillón/profesional vs `422` por validación).
+5. **Reprogramación Atómica:** Cambio de horario en una única transacción de base de datos (`POST /turnos/{id}/reprogramacion`). Si el nuevo slot presenta conflicto, se ejecuta un **rollback total**, garantizando que el turno original permanezca activo sin pérdida de datos.
+6. **Portal Público de Reservas Guest:** Autoservicio para pacientes sin login con autoasignación inteligente de sillón disponible, emisión de token seguro de cancelación y cancelación idempotente por token.
+7. **Interfaz Web Frontend Vanilla:** Aplicación web moderna y modular (HTML5 semántico, CSS moderno y JavaScript ES nativo) servida directamente por FastAPI a través de `StaticFiles`, sin requerir Node.js, Vite ni herramientas de build externas.
+
+---
+
+## 🛠️ Requisitos Previos
+
+Antes de comenzar, asegurate de tener instaladas las siguientes herramientas en tu computadora:
+
+- **Python 3.12 o superior** (verificado y compatible con Python 3.12, 3.13 y 3.14).
+- **Docker y Docker Compose** (para ejecutar el contenedor de base de datos PostgreSQL 16 con la extensión `btree_gist`).
+- **Git** (para clonar el repositorio).
+
+---
+
+## 🚀 Guía de Instalación y Puesta en Marcha (Paso a Paso)
+
+Seguí estos pasos en orden para levantar el proyecto desde cero en tu máquina local sin errores:
+
+### Paso 1: Clonar el repositorio y situarse en la carpeta
+Abrí una terminal (PowerShell en Windows o Bash en Linux/macOS):
 ```bash
-git clone <url-del-repo>
-cd turnos-odontologia/backend
+git clone <URL_DEL_REPOSITORIO>
+cd turnos-odontologia
+```
 
+### Paso 2: Crear y activar el entorno virtual de Python
+Desde la raíz del proyecto (`turnos-odontologia`):
+
+**En Windows:**
+```powershell
 python -m venv .venv
-# Windows:
 .venv\Scripts\activate
-# Linux/macOS:
-# source .venv/bin/activate
+```
 
+**En Linux / macOS:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+*(Verificá que la terminal muestre el prefijo `(.venv)` indicando que el entorno virtual está activo).*
+
+### Paso 3: Instalar las dependencias del proyecto
+Con el entorno virtual activado, instalá el paquete del backend en modo editable junto con `uvicorn`:
+```bash
+cd backend
 pip install -e .
 pip install uvicorn
 ```
 
-## Configuración
+### Paso 4: Configurar las variables de entorno (`.env`)
+Dentro de la carpeta `backend/`, copiá la plantilla de variables de entorno:
 
-```bash
-cd backend
-copy .env.example .env        # Windows
-# cp .env.example .env        # Linux/macOS
+**En Windows (PowerShell):**
+```powershell
+Copy-Item .env.example .env
 ```
 
-`.env` ya trae valores locales de desarrollo (sin secretos reales).
-Variables: `DATABASE_URL`, `POSTGRES_PASSWORD`, `TZ_CONSULTORIO`,
-`API_KEY_RECEPCION`.
-
-> Nunca commitear el `.env` real. Solo datos ficticios en seeds y tests
-> (Ley 25.326: nada de datos reales de pacientes en el repo).
-
-## Levantar la base y migrar
-
+**En Linux / macOS:**
 ```bash
-docker compose up -d db     # desde la raíz del repo
+cp .env.example .env
+```
+
+> [!NOTE]
+> El archivo `.env.example` ya viene configurado con los valores óptimos para desarrollo local:
+> - `DATABASE_URL=postgresql+psycopg://turnos:turnos-dev@127.0.0.1:5433/turnos`  
+>   *(Se utiliza el puerto **5433** en el host para evitar cualquier conflicto si tenés otra instancia de PostgreSQL corriendo localmente en el puerto default 5432).*
+> - `API_KEY_RECEPCION=dev-recepcion-123`
+> - `API_KEY_ODONTOLOGO=dev-odonto-123`
+> - `NOTIF_BACKEND=mock`
+
+### Paso 5: Levantar la base de datos con Docker
+Desde la raíz del proyecto (`turnos-odontologia`):
+```bash
+docker compose up -d db
+```
+Podés verificar que el contenedor esté corriendo y saludable con:
+```bash
+docker compose ps
+```
+*(Debe figurar el servicio `turnos-odontologia-db-1` en estado `healthy` o `running` escuchando en `127.0.0.1:5433`).*
+
+### Paso 6: Aplicar las migraciones de base de datos
+Con el entorno virtual activo, ejecutá las migraciones de Alembic desde la carpeta `backend/` para crear el esquema, los índices GiST y las reglas de integridad:
+```bash
 cd backend
 python -m alembic upgrade head
 ```
+*(Esto aplicará las versiones `001` de tablas base, `002` de doble constraint EXCLUDE, `003` de ajustes de alcance, `004` de columna e índice para cancelación, y `005` de token único y constraint RN05).*
 
-> Con el venv activado, usar siempre `python -m ...`: los `.exe` del venv
-> están rotos en esta máquina (salen con código 1 sin mensaje). El
-> `backend/.env` se carga solo (nada que exportar salvo que quieras
-> pisar valores); se usa `127.0.0.1` porque `localhost` resuelve lento
-> a IPv6 en Windows.
-
-Esto crea las tablas (migración 001), el doble `EXCLUDE` de RN02 más el
-`CHECK (fin > inicio)` (migración 002, con `btree_gist`) y el recorte de
-alcance (migración 003, nunca se edita una migración aplicada).
-
-## Datos de ejemplo (ficticios)
-
+### Paso 7: Sembrar los datos de prueba (Seed)
+Para cargar datos sintéticos iniciales (profesionales, sillones, prestaciones de 30/45/90 min, horarios de atención semanales y turnos de ejemplo):
 ```bash
-cd backend
 python -m app.seed
 ```
+*Salida esperada:* `{'seed': 'ok', 'profesionales': 2, 'sillones': 2, 'prestaciones': 3}` *(o `{'seed': 'ya existente'}` si ya se había ejecutado).*
 
-Carga profesionales, sillones, prestaciones (30/45/90 min) y horario
-Lun–Vie 9–18 + Sáb 9–12. Todo sintético (`@example.com`).
-
-## Correr la API
-
+### Paso 8: Iniciar el servidor de desarrollo
+Iniciá FastAPI con Uvicorn:
 ```bash
-cd backend
 python -m uvicorn app.main:app --reload
 ```
+El servidor quedará escuchando en `http://127.0.0.1:8000`.
 
-- Swagger: http://127.0.0.1:8000/docs
-- OpenAPI: http://127.0.0.1:8000/openapi.json
+---
 
-Endpoint del change:
+## 🖥️ Acceso a la Aplicación y Uso del Frontend
 
-| Método | Ruta | Quién |
-|--------|------|-------|
-| POST | `/turnos` | recepcionista (header `X-API-Key` con `API_KEY_RECEPCION`) |
+Una vez iniciado el servidor:
 
-Respuestas: 201 alta (con `fin` calculado por el servidor), 409
-`RN02_PROFESIONAL`/`RN02_SILLON`, 422 validación, 401 sin credencial.
+1. **Frontend Web Integrado:** Accedé desde tu navegador a:  
+   👉 **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**  
+   *(Servido como estático Vanilla en el mismo origen por FastAPI, sin necesidad de compilar nada).*
 
-## Correr los tests
+2. **Documentación Swagger / OpenAPI:**  
+   👉 **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**  
+   👉 **[http://127.0.0.1:8000/openapi.json](http://127.0.0.1:8000/openapi.json)**
 
-Los tests de RN02 van **contra Postgres 16 real** (nunca SQLite ni mocks
-de DB), así que la base tiene que estar levantada:
+### Credenciales de Prueba para el Frontend
+En la esquina superior del frontend podés ingresar la clave correspondiente según el rol que quieras probar (se guarda en memoria de sesión):
 
+| Rol | Clave de Acceso (API Key) | Pantallas Disponibles |
+|---|---|---|
+| **Público (Guest)** | *(No requiere clave)* | • **Reserva Pública:** Seleccionar profesional, prestación, ver slots y reservar con autoasignación de sillón y token.<br>• **Cancelar Reserva:** Cancelar un turno guest ingresando su token. |
+| **Recepcionista** | `dev-recepcion-123` | • **Dar Turno:** Alta de turno con validación inmediata de conflictos de sillón o profesional (RN02) y límite diario (RN05).<br>• **Reprogramar / Cancelar:** Reprogramación atómica con rollback o cancelación directa liberando el slot. |
+| **Odontólogo** | `dev-odonto-123` | • **Agenda Diaria:** Ver turnos asignados por fecha con desglose de paciente, prestación y sillón, con filtro para incluir o excluir turnos cancelados. |
+
+---
+
+## 🧪 Ejecución de Tests Automatizados
+
+La suite de pruebas automatizadas contiene **84 tests** que verifican el 100% de los requerimientos, las reglas de negocio puras, los contratos de API y las condiciones de concurrencia reales.
+
+> [!IMPORTANT]
+> Los tests corren contra la instancia real de **PostgreSQL 16 en Docker** (no usan SQLite ni mocks de base de datos) para garantizar que las extensiones `btree_gist` y las exclusiones de concurrencia funcionen exactamente como en producción.
+
+Con la base de datos levantada (`docker compose up -d db`) y el entorno virtual activo:
 ```bash
-docker compose up -d db     # desde la raíz del repo
 cd backend
 python -m pytest -v
 ```
 
-Archivos:
+### Cobertura de la Suite de Tests:
+- `test_rules.py`: Reglas RN01 y RN03 como funciones puras y deterministas en Python.
+- `test_rn02_solapamiento.py` y `test_rn02_concurrencia.py`: Doble eje profesional/sillón, intervalos semiabiertos `[)`, slots liberados tras cancelación y 2 solicitudes concurrentes al mismo slot con un solo ganador (201 vs 409).
+- `test_rn05_indice_parcial.py` y `test_rn05_limite_paciente.py`: Invariante de 1 turno activo por paciente por día y códigos de error `RN05`.
+- `test_cancelacion_api.py`: Cancelación transaccional por recepcionista, idempotencia y liberación de cupo.
+- `test_reprogramacion_api.py`: Atomicidad de reprogramación, rollback total si el horario destino está tomado y persistencia del turno original.
+- `test_reservas_guest_api.py`: Flujo completo de paciente invitado, emisión y validación de tokens de cancelación, protección contra campos clínicos (Ley 25.326) y concurrencia.
+- `test_agenda_odontologo.py`: Control de acceso RBAC, 403 al consultar agendas ajenas y orden cronológico.
+- `test_catalogos_api.py` y `test_disponibilidad.py`: Endpoints públicos y cálculo de disponibilidad horaria.
+- `test_migracion_004.py` y `test_migracion_005.py`: Migraciones reversibles con preservación de datos e invariantes.
+- `test_notificaciones_mock.py`: Notificaciones desacopladas y patrón best-effort post-commit.
 
-- `tests/test_rn02_solapamiento.py` — borde `[)` que se toca no choca,
-  doble eje profesional/sillón, cancelado no bloquea (predicado parcial).
-- `tests/test_rn02_concurrencia.py` — 2 POST concurrentes al mismo slot:
-  uno da 201 y el otro 409.
-- `tests/test_turnos_api.py` — alta e2e: RN01, 409 por eje, RN03, 422.
-- `tests/test_rules.py` — RN01/RN03 puras, sin DB.
-- `tests/test_api_pure.py` — docs, auth 401, schemas estrictos, mapper 409.
+---
 
-## Problemas comunes
-
-- **Puerto 5432 ocupado** (`ports are not available`): otro Postgres local usa el
-  puerto. Detené ese servicio o levantá un PG16 alternativo en otro puerto y
-  apuntá `DATABASE_URL` ahí (ej. `localhost:5433`) solo para tu corrida local.
-- **`localhost` lento en Windows**: si cada conexión tarda ~10 s, usá `127.0.0.1`
-  en `DATABASE_URL` (resolución IPv6 lenta en algunas máquinas).
-- **Tests que no conectan**: verificá `docker compose ps` (db en `healthy`) y que
-  `alembic upgrade head` esté en `head` (`alembic current`).
-
-## Estructura
+## 📂 Estructura del Repositorio
 
 ```
-backend/                # API FastAPI (todo comando Python desde acá)
-backend/app/            # API (main.py solo cablea el router)
-backend/app/core/       # config por env vars + seguridad (API key)
-backend/app/domain/     # models.py + rules.py (RN01/RN03 puras)
-backend/app/application/ # bookings.py (alta transaccional)
-backend/app/api/v1/     # turnos.py (POST /turnos)
-backend/app/schemas/    # TurnoCreate/TurnoOut estrictos (sin campo fin)
-backend/alembic/versions/ # 001 tablas, 002 doble EXCLUDE, 003 recorte
-backend/tests/          # suite pytest contra Postgres real
-frontend/               # placeholder; interfaz vanilla habilitada por DD-08 (C-31..C-35)
-docker-compose.yml      # raíz: orquesta db (+ futuro frontend)
-docs/discovery/       # informe-discovery.md + .pdf + verificación de fuentes
-knowledge-base/       # los 10 archivos canónicos del dominio
-openspec/             # specs vigentes (turnos, plataforma-mvp) + change archivado
-.agents/skills/         # skills versionadas en el repo (ver AGENTS.md)
+turnos-odontologia/
+├── backend/                   # Backend API con FastAPI y SQLAlchemy Async
+│   ├── alembic/versions/      # Migraciones de base de datos (001 a 005)
+│   ├── app/
+│   │   ├── api/v1/            # Routers (catalogos, disponibilidad, agenda, turnos, reservas)
+│   │   ├── application/       # Lógica transaccional (bookings.py, availability.py, reservas.py)
+│   │   ├── core/              # Configuración (.env), seguridad y manejo de errores
+│   │   ├── domain/            # Modelos SQLAlchemy y reglas puras (models.py, rules.py)
+│   │   ├── notifications/     # Servicio de notificaciones desacoplado (mock)
+│   │   ├── schemas/           # Schemas Pydantic con extra="forbid"
+│   │   ├── main.py            # Fábrica FastAPI y montaje del frontend estático
+│   │   └── seed.py            # Script de inicialización de datos de prueba
+│   ├── tests/                 # Suite completa de 84 tests con pytest
+│   ├── pyproject.toml         # Dependencias y configuración de packaging
+│   └── alembic.ini            # Configuración de Alembic
+├── frontend/                  # Interfaz de usuario Vanilla (HTML5/CSS3/JS modular)
+│   ├── css/app.css            # Estilos modernos y responsivos
+│   ├── js/
+│   │   ├── screens/           # Vistas (agenda, dar-turno, reprogramar, reserva)
+│   │   ├── api.js             # Cliente fetch centralizado para contrato {code, message}
+│   │   ├── auth.js            # Manejo de roles y credenciales en memoria
+│   │   └── router.js          # Navegación SPA sin recarga
+│   └── index.html             # Punto de entrada de la aplicación web
+├── knowledge-base/            # Base de conocimiento SDD (10 documentos canónicos de especificación)
+├── openspec/                  # Especificaciones activas y changes archivados (C-01 a C-35)
+├── docs/                      # Documentación del trabajo (discovery, reflexión, entregables)
+├── mcp-skill/                 # Integración de Skill propia (auditor) y Servidor MCP Context7
+├── docker-compose.yml         # Orquestación de PostgreSQL 16 con puerto 5433
+├── CHANGES.md                 # Roadmap canónico de implementación SDD (100% archivado)
+└── README.md                  # Este archivo de documentación
 ```
 
-## Documentos del trabajo
+---
 
-- `docs/discovery/informe-discovery.md` (y `.pdf`): investigación de mercado.
-- `CHANGES.md`: roadmap canónico del proyecto (árbol de dependencias C-01 a C-35).
-- `docs/reflexion.md`: reflexión escrita del trabajo.
-- `AGENTS.md` / `CLAUDE.md`: reglas del agente e integraciones.
-- `mcp-skill/` y `docs/skills-mcp/`: ficha de investigación (`investigacion.md`), informe de aplicación (`aplicacion.md`), evidencias y configuración de la integración de Skill propia (`auditor-changes-22-23-29`) + Servidor MCP (`Context7`).
+## 🔧 Resolución de Problemas Frecuentes
 
-## Integración de Servidor MCP (`Context7`) y Skill Propia (`auditor-changes-22-23-29`)
-
-### 1. Skill propia del proyecto: `auditor-changes-22-23-29`
-- **Ubicación**: `.agents/skills/auditor-changes-22-23-29/SKILL.md` (con copia en `mcp-skill/auditor-changes-22-23-29/SKILL.md`) y registrada en `.atl/skill-registry.md` y `AGENTS.md`.
-- **Propósito**: Auditar los artefactos SDD (`proposal.md`, `specs/*/spec.md`, `design.md`, `tasks.md`) e implementación de los changes de Fase 3 (`C-22`, `C-23`, `C-29`) contra las reglas `RN01–RN05`, los 3 escenarios verificables obligatorios y la Ley 25.326.
-
-### 2. Servidor MCP conectado: `Context7 MCP` (`@upstash/context7-mcp`)
-- **Requisitos**: Node.js 18+ (`npx` disponible en `PATH`). No requiere claves ni variables de entorno obligatorias (opera sin secretos en modo público de solo lectura sobre documentación oficial).
-- **Configuración reproducible (sin secretos)**:
-  Archivo de ejemplo incluido en [`mcp-skill/config-mcp-ejemplo.json`](mcp-skill/config-mcp-ejemplo.json). En Antigravity, los esquemas de las herramientas (`resolve-library-id` y `query-docs`) se cargan desde `~/.gemini/antigravity-cli/mcp/context7/`:
-  ```json
-  {
-    "mcpServers": {
-      "context7": {
-        "command": "npx",
-        "args": ["-y", "@upstash/context7-mcp"],
-        "env": {}
-      }
-    }
-  }
+- **Error de conexión a la base de datos (`ConnectionRefusedError` o `could not connect to server`):**  
+  Asegurate de haber ejecutado `docker compose up -d db` y de que `DATABASE_URL` en tu `backend/.env` utilice el puerto `5433`:
   ```
-- **Comprobación de conexión y ejecución de herramientas**:
-  1. Invocar `resolve-library-id` con `libraryName: "SQLAlchemy"` para obtener el ID canónico (`/websites/sqlalchemy_en_20_orm`).
-  2. Invocar `query-docs` con `libraryId: "/websites/sqlalchemy_en_20_orm"` para consultar el manejo transaccional de `AsyncSession` (`expire_on_commit=False`, `commit`, `rollback`).
-  3. El registro completo de solicitud y respuesta real se encuentra en [`mcp-skill/evidencias/ejecucion-mcp-context7.md`](mcp-skill/evidencias/ejecucion-mcp-context7.md).
-- **Resolución de problemas comunes de instalación/uso**:
-  - Si las herramientas `resolve-library-id` o `query-docs` aparecen como *lazy-loaded* en Antigravity, leer primero su archivo `.json` de esquema en `~/.gemini/antigravity-cli/mcp/context7/` antes de invocar `call_mcp_tool`.
+  DATABASE_URL=postgresql+psycopg://turnos:turnos-dev@127.0.0.1:5433/turnos
+  ```
+- **Error `ports are not available: exposing port TCP 127.0.0.1:5433`:**  
+  Tenés otra aplicación utilizando el puerto 5433. Podés cambiar el puerto del host en `docker-compose.yml` (por ejemplo a `"127.0.0.1:5434:5432"`) y actualizar el puerto en tu `backend/.env`.
+- **Lentitud en respuestas (`~10 segundos por conexión`) en Windows:**  
+  En algunos sistemas Windows, `localhost` resuelve primero a IPv6. Para evitarlo, asegurate de utilizar siempre `127.0.0.1` en `DATABASE_URL`.
+- **Ejecutables `.exe` de `.venv` fallan en Windows:**  
+  Si al correr `pytest` o `alembic` la terminal no responde o sale con código de error, utilizá siempre la sintaxis de módulo de Python: `python -m pytest` y `python -m alembic`.
+- **Protección de Datos Personales (Ley 25.326):**  
+  Todos los datos presentes en el script de seed y en las pruebas son puramente sintéticos y ficticios. Nunca se deben ingresar datos clínicos ni de pacientes reales en este entorno.
+
+---
+
+## 🤖 Integración de MCP y Skill Propia
+
+El proyecto incluye la investigación, desarrollo y configuración de herramientas avanzadas para agentes de IA:
+
+### 1. Skill Propia: `auditor-changes-22-23-29`
+- **Ubicación:** `.agents/skills/auditor-changes-22-23-29/SKILL.md` (y espejo en `mcp-skill/auditor-changes-22-23-29/SKILL.md`).
+- **Función:** Skill diseñada específicamente para auditar los cambios de la Fase 3 (`C-22`, `C-23`, `C-29`), verificando el cumplimiento estricto de las reglas `RN01` a `RN05`, escenarios con pruebas pytest y protección según Ley 25.326.
+
+### 2. Servidor MCP: `Context7` (`@upstash/context7-mcp`)
+- **Configuración:** Disponible en `mcp-skill/config-mcp-ejemplo.json`.
+- **Uso:** Servidor MCP que permite consultar documentación canónica en tiempo de diseño (por ejemplo, resolución de consultas sobre el modelo transaccional asíncrono de `SQLAlchemy 2.0`). Las evidencias de su invocación y trazabilidad se documentan en `mcp-skill/evidencias/ejecucion-mcp-context7.md`.
