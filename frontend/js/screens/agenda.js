@@ -26,7 +26,7 @@ export function renderAgenda(app) {
             Cronograma ordenado por horario de inicio con control de acceso por rol (Odontólogo titular o Recepción global).
           </p>
         </div>
-        <span class="badge badge-ice">GET /agenda · RBAC Activo</span>
+        <span class="badge badge-ice">Agenda Diaria · Profesionales</span>
       </div>
 
       <div id="agenda-auth-banner"></div>
@@ -130,7 +130,7 @@ export function renderAgenda(app) {
         <div class="cred-banner">
           <div class="cred-banner-text">
             Sesión activa como <strong>Odontólogo</strong> (Titular ID: <span class="code-pill">${cur.profesionalId || "no asignado"}</span>).
-            Si consultás otro profesional, el backend responderá <span class="code-pill">403 AGENDA_AJENA</span>.
+            Solo podés consultar la agenda correspondiente a tu perfil profesional.
           </div>
           <button type="button" class="sm" id="btn-sync-prof">Sincronizar credencial con el profesional elegido</button>
         </div>

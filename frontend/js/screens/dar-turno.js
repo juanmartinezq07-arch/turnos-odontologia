@@ -23,10 +23,10 @@ export function renderDarTurno(app) {
         <div class="page-title-group">
           <h2>Alta de Turno en Recepción</h2>
           <p class="page-subtitle">
-            Asignación transaccional de profesional, prestación y sillón/box con cálculo de duración en servidor (RN01) y doble exclusión GiST (RN02).
+            Asignación de profesional, prestación y consultorio con verificación de horarios disponibles en tiempo real.
           </p>
         </div>
-        <span class="badge badge-navy">POST /turnos · Rol Recepcionista</span>
+        <span class="badge badge-navy">Admisión · Rol Recepcionista</span>
       </div>
 
       <div id="dt-auth-banner"></div>
@@ -43,7 +43,7 @@ export function renderDarTurno(app) {
               </label>
 
               <label>
-                Prestación Clínica (RN01)
+                Prestación Clínica
                 <select name="prestacion_id" id="pres" required></select>
               </label>
             </div>
@@ -90,7 +90,7 @@ export function renderDarTurno(app) {
             <fieldset style="margin-bottom:1rem;">
               <legend>2. Datos de Contacto del Paciente</legend>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
-                <span style="font-size:0.78rem; color:var(--muted);">Solo datos sintéticos (Ley 25.326 — sin datos clínicos)</span>
+                <span style="font-size:0.78rem; color:var(--muted);">Datos de contacto para confirmación del turno</span>
                 <button type="button" class="sm chip-btn" id="btn-demo-patient">Autocompletar Paciente Demo</button>
               </div>
 
@@ -300,8 +300,8 @@ export function renderDarTurno(app) {
           RN02_PROFESIONAL: "El profesional ya tiene un turno en ese horario.",
           RN02_SILLON: "El sillón ya está ocupado en ese horario.",
           RN05: "El paciente ya tiene un turno ese día.",
-          RN03_PASADO: "No se puede agendar un turno en una fecha u hora pasada (RN03).",
-          RN03_FUERA_DE_HORARIO: "El horario elegido está fuera de la franja de atención del consultorio (RN03).",
+          RN03_PASADO: "No se puede agendar un turno en una fecha u hora pasada.",
+          RN03_FUERA_DE_HORARIO: "El horario elegido está fuera de la franja de atención del consultorio.",
         }[err.code];
         msg.textContent = m || `Error: ${err.code} — ${err.message}`;
         if (err.status === 401) msg.textContent = "Ingresá una credencial de recepción válida.";

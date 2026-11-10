@@ -73,7 +73,7 @@ export function renderReserva(app) {
             <fieldset>
               <legend>3. Tus Datos de Contacto</legend>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
-                <span style="font-size:0.78rem; color:var(--muted);">Protección Ley 25.326: no se solicitan datos clínicos</span>
+                <span style="font-size:0.78rem; color:var(--muted);">Ingresá tus datos de contacto para recibir la confirmación</span>
                 <button type="button" class="sm chip-btn" id="btn-res-demo">Autocompletar Paciente Demo</button>
               </div>
 
@@ -106,7 +106,7 @@ export function renderReserva(app) {
           <section class="card-subtle">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem;">
               <h3 style="margin:0; font-size:1.02rem; color:var(--navy-900);">Cancelar Reserva con Token</h3>
-              <span class="badge badge-cancelado">RN04</span>
+              <span class="badge badge-cancelado">Autogestión</span>
             </div>
             <p style="margin:0 0 1rem; font-size:0.84rem; color:var(--muted);">
               Si necesitás cancelar tu turno, ingresá el token que recibiste al confirmar tu reserva. El horario se liberará de inmediato.
@@ -278,7 +278,7 @@ export function renderReserva(app) {
     } catch (err) {
       msg.className = "feedback-box error";
       if (err.status === 429) msg.textContent = "Demasiados intentos, intentá más tarde.";
-      else if (err.code && err.code.startsWith("RN02")) msg.textContent = `Conflicto de agenda (${err.code}).`;
+      else if (err.code && err.code.startsWith("RN02")) msg.textContent = "El horario seleccionado ya no está disponible.";
       else if (err.code === "RN05") msg.textContent = "Ya tenés un turno ese día.";
       else msg.textContent = `Error: ${err.code || err.status} — ${err.message}`;
       showToast(msg.textContent, "error");

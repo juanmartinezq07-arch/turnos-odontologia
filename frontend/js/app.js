@@ -201,10 +201,10 @@ function homeView(app) {
       <div class="hero-banner">
         <div>
           <span class="hero-kicker">Clínica Odontológica · Sistema Integral de Turnos</span>
-          <h2>Gestión Clínica Precisa y Sin Solapamientos</h2>
+          <h2>Gestión Clínica</h2>
           <p>
-            Plataforma odontológica con validación estricta en base de datos para profesionales y sillones,
-            reprogramación transaccional atómica y portal de autogestión para pacientes.
+            Organizá la atención del consultorio de forma ágil y ordenada. Consultá agendas profesionales,
+            administrá la disponibilidad de cada especialidad y facilitá la reserva de turnos online para tus pacientes.
           </p>
         </div>
         <div style="display:flex; gap:0.65rem; flex-wrap:wrap;">
@@ -251,8 +251,8 @@ function homeView(app) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <div>
-          <div class="stat-value">RN01–RN05</div>
-          <div class="stat-label">Garantía Doble GiST Activa</div>
+          <div class="stat-value">Lun – Sáb</div>
+          <div class="stat-label">Atención y Reserva Online</div>
         </div>
       </div>
     </div>
@@ -264,7 +264,7 @@ function homeView(app) {
           <h3>Portal de Pacientes</h3>
           <p>
             Consultá horarios disponibles en tiempo real por odontólogo y prestación, reservá sin crear cuenta
-            y gestioná cancelaciones con tu token único.
+            y gestioná cancelaciones con tu código de reserva.
           </p>
         </div>
         <div class="portal-actions">
@@ -278,8 +278,8 @@ function homeView(app) {
           <span class="badge badge-navy">Rol Recepcionista</span>
           <h3>Recepción y Admisión</h3>
           <p>
-            Otorgá turnos asignando sillón/box y profesional con validación inmediata (RN02 y RN05),
-            o ejecutá reprogramaciones atómicas con rollback garantizado.
+            Otorgá turnos asignando sillón/box y profesional con verificación inmediata de disponibilidad,
+            o gestioná reprogramaciones y cancelaciones de forma simple y segura.
           </p>
         </div>
         <div class="portal-actions">
@@ -306,21 +306,21 @@ function homeView(app) {
     <div class="card">
       <div class="page-header" style="margin-bottom:0.75rem;">
         <div class="page-title-group">
-          <h2>Reglas Clínicas e Invariantes del Sistema</h2>
+          <h2>Información de Atención del Consultorio</h2>
           <p class="page-subtitle">Navegación directa: <a href="#/agenda">Agenda</a> · <a href="#/dar-turno">Dar turno</a> · <a href="#/reprogramar">Reprogramar/Cancelar</a> · <a href="#/reserva">Reserva pública</a> · <a href="#/catalogos">Catálogos</a></p>
         </div>
       </div>
       <div class="grid-2">
         <div class="card-subtle">
-          <strong>RN01 y RN02 · Duración por Prestación y Doble Exclusión</strong>
+          <strong>Especialidades y Duración de Turnos</strong>
           <p style="margin:0.35rem 0 0; font-size:0.85rem; color:var(--muted);">
-            El servidor calcula automáticamente el horario de finalización según la prestación (30, 45 o 90 min) y PostgreSQL impide solapamientos simultáneamente por odontólogo y por sillón mediante índices GiST.
+            Cada consulta se agenda contemplando el tiempo estimado según el tratamiento seleccionado (30, 45 o 90 minutos) y la disponibilidad del profesional y su consultorio.
           </p>
         </div>
         <div class="card-subtle">
-          <strong>RN03, RN04 y RN05 · Horarios, Cancelación y Límite Diario</strong>
+          <strong>Horarios de Atención y Cancelaciones</strong>
           <p style="margin:0.35rem 0 0; font-size:0.85rem; color:var(--muted);">
-            Validación de horarios de atención, liberación inmediata de cupo al cancelar o reprogramar atómicamente, y límite de máximo 1 turno activo por paciente por día calendario.
+            Atención de lunes a viernes de 09:00 a 18:00 hs y sábados de 09:00 a 12:00 hs. Las cancelaciones o cambios de horario liberan el lugar de inmediato para otros pacientes.
           </p>
         </div>
       </div>
@@ -427,7 +427,7 @@ function catalogosView(app) {
           <div style="padding:0.75rem; background:#fff; border:1px solid var(--border); border-radius:8px; margin-bottom:0.6rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
               <strong>${pr.nombre}</strong>
-              <span class="badge badge-ice">${pr.duracion_min} min (RN01)</span>
+              <span class="badge badge-ice">${pr.duracion_min} min</span>
             </div>
             <div style="font-size:0.72rem; color:var(--muted); margin-top:0.35rem;" class="code-pill">${pr.id}</div>
           </div>`

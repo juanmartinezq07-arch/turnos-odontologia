@@ -35,12 +35,12 @@ export function renderReprogramar(app) {
     <div class="card">
       <div class="page-header">
         <div class="page-title-group">
-          <h2>Reprogramación Atómica y Cancelación</h2>
+          <h2>Reprogramación y Cancelación de Turnos</h2>
           <p class="page-subtitle">
-            Liberación inmediata de cupo al cancelar (RN04) y reprogramación en una única transacción con rollback total ante conflictos (RN02/RN05).
+            Gestión de cambios de horario y cancelaciones con actualización inmediata de la disponibilidad en agenda.
           </p>
         </div>
-        <span class="badge badge-navy">POST /turnos/{id}/reprogramacion · Transacción Atómica</span>
+        <span class="badge badge-navy">Gestión de Turnos · Recepción</span>
       </div>
 
       <div id="rep-auth-banner"></div>
@@ -67,8 +67,8 @@ export function renderReprogramar(app) {
       <div class="grid-2">
         <section class="card-subtle">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-            <h3 style="margin:0; color:var(--navy-900); font-size:1.05rem;">Cancelar Turno (RN04)</h3>
-            <span class="badge badge-cancelado">Idempotente</span>
+            <h3 style="margin:0; color:var(--navy-900); font-size:1.05rem;">Cancelar Turno</h3>
+            <span class="badge badge-cancelado">Liberación inmediata</span>
           </div>
 
           <form id="fc">
@@ -83,8 +83,8 @@ export function renderReprogramar(app) {
 
         <section class="card-subtle">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-            <h3 style="margin:0; color:var(--navy-900); font-size:1.05rem;">Reprogramar Turno (C-23)</h3>
-            <span class="badge badge-ice">Rollback Atómico</span>
+            <h3 style="margin:0; color:var(--navy-900); font-size:1.05rem;">Reprogramar Turno</h3>
+            <span class="badge badge-ice">Cambio de horario</span>
           </div>
 
           <form id="fr">
@@ -118,7 +118,7 @@ export function renderReprogramar(app) {
               <input name="inicio" id="fr-inicio" type="datetime-local" value="${defaultSearchDate}T10:30" required />
             </label>
 
-            <button type="submit" class="primary">Ejecutar Reprogramación Atómica</button>
+            <button type="submit" class="primary">Confirmar Reprogramación</button>
           </form>
           <p id="mr" class="feedback-box"></p>
         </section>
@@ -410,9 +410,9 @@ export function renderReprogramar(app) {
       mr.className = "feedback-box error";
       const code = err.code || "";
       if (code === "TURNO_NO_ACTIVO") mr.textContent = "El turno original ya estaba cancelado.";
-      else if (code.startsWith("RN02")) mr.textContent = `Conflicto de agenda (${code}). El turno original sigue activo.`;
-      else if (code === "RN05") mr.textContent = `Paciente ya tiene turno ese día (${code}). El turno original sigue activo.`;
-      else if (code.startsWith("RN03")) mr.textContent = `Validación (${code}). El turno original sigue activo.`;
+      else if (code.startsWith("RN02")) mr.textContent = "Conflicto de horario en la agenda. El turno original sigue activo.";
+      else if (code === "RN05") mr.textContent = "El paciente ya tiene un turno ese día. El turno original sigue activo.";
+      else if (code.startsWith("RN03")) mr.textContent = "El horario elegido no es válido. El turno original sigue activo.";
       else if (err.status === 404) mr.textContent = "Turno no encontrado.";
       else if (err.status === 401) mr.textContent = "Ingresá credencial de recepción.";
       else mr.textContent = `Error: ${code} — ${err.message}`;
